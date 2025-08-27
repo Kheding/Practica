@@ -1,5 +1,3 @@
-# 🦈 Sharkfit
-
 **Versión actual: 0.8.5**  
 Sistema Intranet para gestión operativa, comercial y administrativa de gimnasios.
 
