@@ -1,0 +1,23 @@
+{
+  "messages": {
+    "unauthorized": "許可されていないアクセスです。",
+    "system_error": "おっと！予期しないエラーが発生しました。しばらくしてからもう一度お試しください。",
+    "invalid_input": "無効な入力です。データを確認して再試行してください。",
+    "data_not_found": "リクエストされたデータが見つかりません。",
+    "delete_restricted_error": "他のレコードと関連しているため、このレコードを削除できません。",
+    "USER.MENU.PUBLIC_PROFILE": "公開プロフィール",
+    "USER.MENU.MY_PROFILE": "自分のプロフィール",
+    "USER.MENU.MY_ACCOUNT": "自分のアカウント",
+    "USER.MENU.GET_STARTED": "始める",
+    "USER.MENU.BILLING": "請求",
+    "USER.MENU.SECURITY": "セキュリティ",
+    "USER.MENU.MEMBERS_&_ROLES": "メンバーと役割",
+    "USER.MENU.INTEGRATIONS": "統合",
+    "USER.MENU.NOTIFICATIONS": "通知",
+    "USER.MENU.DEV_FORUM": "開発者フォーラム",
+    "USER.MENU.PAYMENT_&_SUBSCRIPTION_INFO": "支払いとサブスクリプション情報",
+    "USER.MENU.DARK_MODE": "ダークモード",
+    "USER.MENU.LOGOUT": "ログアウト",
+    "USER.MENU.LANGUAGE": "言語"
+  }
+}

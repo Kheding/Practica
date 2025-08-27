@@ -1,0 +1,23 @@
+{
+  "messages": {
+    "unauthorized": "Unbefugter Zugriff.",
+    "system_error": "Ups! Etwas ist schiefgelaufen. Bitte versuche es in einem Moment erneut.",
+    "invalid_input": "Ungültige Eingabe. Bitte überprüfe deine Daten und versuche es erneut.",
+    "data_not_found": "Angeforderte Daten nicht gefunden.",
+    "delete_restricted_error": "Dieser Datensatz kann nicht gelöscht werden, da er mit anderen Datensätzen verknüpft ist.",
+    "USER.MENU.PUBLIC_PROFILE": "Öffentliches Profil",
+    "USER.MENU.MY_PROFILE": "Mein Profil",
+    "USER.MENU.MY_ACCOUNT": "Mein Konto",
+    "USER.MENU.GET_STARTED": "Loslegen",
+    "USER.MENU.BILLING": "Abrechnung",
+    "USER.MENU.SECURITY": "Sicherheit",
+    "USER.MENU.MEMBERS_&_ROLES": "Mitglieder & Rollen",
+    "USER.MENU.INTEGRATIONS": "Integrationen",
+    "USER.MENU.NOTIFICATIONS": "Benachrichtigungen",
+    "USER.MENU.DEV_FORUM": "Entwicklerforum",
+    "USER.MENU.PAYMENT_&_SUBSCRIPTION_INFO": "Zahlungs- & Abonnementinformationen",
+    "USER.MENU.DARK_MODE": "Dunkelmodus",
+    "USER.MENU.LOGOUT": "Abmelden",
+    "USER.MENU.LANGUAGE": "Sprache"
+  }
+}

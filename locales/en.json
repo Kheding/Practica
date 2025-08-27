@@ -1,0 +1,23 @@
+{
+  "messages": {
+    "unauthorized": "Unauthorized access.",
+    "system_error": "Oops! Something didn’t go as planned. Please try again in a moment.",
+    "invalid_input": "Invalid input. Please check your data and try again.",
+    "data_not_found": "Requested data not found.",
+    "delete_restricted_error": "Unable to delete this record because it is linked to other records.",
+    "USER.MENU.PUBLIC_PROFILE": "Public Profile",
+    "USER.MENU.MY_PROFILE": "My Profile",
+    "USER.MENU.MY_ACCOUNT": "My Account",
+    "USER.MENU.GET_STARTED": "Get Started",
+    "USER.MENU.BILLING": "Billing",
+    "USER.MENU.SECURITY": "Security",
+    "USER.MENU.MEMBERS_&_ROLES": "Members & Roles",
+    "USER.MENU.INTEGRATIONS": "Integrations",
+    "USER.MENU.NOTIFICATIONS": "Notifications",
+    "USER.MENU.DEV_FORUM": "Dev Forum",
+    "USER.MENU.PAYMENT_&_SUBSCRIPTION_INFO": "Payment & subscription info",
+    "USER.MENU.DARK_MODE": "Dark Mode",
+    "USER.MENU.LOGOUT": "Logout",
+    "USER.MENU.LANGUAGE": "Language"
+  }
+}

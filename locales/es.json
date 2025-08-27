@@ -1,0 +1,23 @@
+{
+  "messages": {
+    "unauthorized": "Acceso no autorizado.",
+    "system_error": "¡Ups! Algo no salió como se planeó. Por favor, intenta de nuevo en un momento.",
+    "invalid_input": "Entrada no válida. Verifica tus datos e inténtalo de nuevo.",
+    "data_not_found": "Datos solicitados no encontrados.",
+    "delete_restricted_error": "No se puede eliminar este registro porque está vinculado a otros registros.",
+    "USER.MENU.PUBLIC_PROFILE": "Perfil público",
+    "USER.MENU.MY_PROFILE": "Mi perfil",
+    "USER.MENU.MY_ACCOUNT": "Mi cuenta",
+    "USER.MENU.GET_STARTED": "Empezar",
+    "USER.MENU.BILLING": "Facturación",
+    "USER.MENU.SECURITY": "Seguridad",
+    "USER.MENU.MEMBERS_&_ROLES": "Miembros y roles",
+    "USER.MENU.INTEGRATIONS": "Integraciones",
+    "USER.MENU.NOTIFICATIONS": "Notificaciones",
+    "USER.MENU.DEV_FORUM": "Foro de desarrollo",
+    "USER.MENU.PAYMENT_&_SUBSCRIPTION_INFO": "Información de pago y suscripción",
+    "USER.MENU.DARK_MODE": "Modo oscuro",
+    "USER.MENU.LOGOUT": "Cerrar sesión",
+    "USER.MENU.LANGUAGE": "Idioma"
+  }
+}

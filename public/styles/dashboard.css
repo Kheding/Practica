@@ -1,0 +1,159 @@
+/* dashboard.css - Estilos para dashboardStaff.html */
+
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #f4f6fa;
+    margin: 0;
+    padding: 0;
+    color: #222;
+}
+
+.header {
+    background: #1a237e;
+    color: #fff;
+    padding: 24px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.header .logo {
+    font-size: 2rem;
+    font-weight: bold;
+    letter-spacing: 2px;
+}
+
+.header nav a {
+    color: #fff;
+    text-decoration: none;
+    margin-left: 24px;
+    font-size: 1rem;
+    transition: color 0.2s;
+}
+
+.header nav a:hover {
+    color: #ffb300;
+}
+
+.dashboard-container {
+    max-width: 1200px;
+    margin: 32px auto;
+    padding: 24px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(30, 34, 90, 0.08);
+}
+
+.dashboard-title {
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 24px;
+    color: #1a237e;
+}
+
+.stats-cards {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+}
+
+.stats-card {
+    flex: 1 1 200px;
+    background: #e3eafc;
+    border-radius: 10px;
+    padding: 24px;
+    text-align: center;
+    box-shadow: 0 1px 4px rgba(26,35,126,0.07);
+}
+
+.stats-card h3 {
+    margin: 0 0 8px 0;
+    font-size: 1.2rem;
+    color: #3949ab;
+}
+
+.stats-card .number {
+    font-size: 2.2rem;
+    font-weight: bold;
+    color: #1a237e;
+}
+
+.section {
+    margin-bottom: 32px;
+}
+
+.section-title {
+    font-size: 1.3rem;
+    font-weight: 500;
+    margin-bottom: 16px;
+    color: #3949ab;
+}
+
+.table-responsive {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+}
+
+th, td {
+    padding: 12px 16px;
+    text-align: left;
+}
+
+th {
+    background: #e8eaf6;
+    color: #1a237e;
+    font-weight: 600;
+}
+
+tr:nth-child(even) {
+    background: #f5f7fa;
+}
+
+tr:hover {
+    background: #e3eafc;
+}
+
+.button {
+    background: #3949ab;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 18px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.button:hover {
+    background: #283593;
+}
+
+@media (max-width: 900px) {
+    .stats-cards {
+        flex-direction: column;
+        gap: 16px;
+    }
+    .dashboard-container {
+        padding: 12px;
+    }
+}
+
+@media (max-width: 600px) {
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 16px;
+    }
+    .dashboard-title {
+        font-size: 1.3rem;
+    }
+    .section-title {
+        font-size: 1.1rem;
+    }
+}

@@ -1,0 +1,23 @@
+{
+  "messages": {
+    "unauthorized": "Accès non autorisé.",
+    "system_error": "Oups ! Quelque chose s'est mal passé. Veuillez réessayer dans un instant.",
+    "invalid_input": "Entrée invalide. Veuillez vérifier vos données et réessayer.",
+    "data_not_found": "Données demandées introuvables.",
+    "delete_restricted_error": "Impossible de supprimer cet enregistrement car il est lié à d'autres enregistrements.",
+    "USER.MENU.PUBLIC_PROFILE": "Profil public",
+    "USER.MENU.MY_PROFILE": "Mon profil",
+    "USER.MENU.MY_ACCOUNT": "Mon compte",
+    "USER.MENU.GET_STARTED": "Commencer",
+    "USER.MENU.BILLING": "Facturation",
+    "USER.MENU.SECURITY": "Sécurité",
+    "USER.MENU.MEMBERS_&_ROLES": "Membres et rôles",
+    "USER.MENU.INTEGRATIONS": "Intégrations",
+    "USER.MENU.NOTIFICATIONS": "Notifications",
+    "USER.MENU.DEV_FORUM": "Forum développeur",
+    "USER.MENU.PAYMENT_&_SUBSCRIPTION_INFO": "Infos de paiement et d’abonnement",
+    "USER.MENU.DARK_MODE": "Mode sombre",
+    "USER.MENU.LOGOUT": "Déconnexion",
+    "USER.MENU.LANGUAGE": "Langue"
+  }
+}
