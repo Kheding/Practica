@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Staff - Mi Sede</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(to bottom right, #f8fafc, #e2e8f0);
+    }
+
+    main.content {
+      margin-left: 0;
+      padding: 2rem 1rem;
+      transition: margin-left 0.3s ease;
+      min-height: 100vh;
+    }
+
+    @media (min-width: 768px) {
+      main.content {
+        margin-left: 16rem;
+        padding: 3rem 2rem;
+      }
+    }
+
+    .hidden-col {
+      display: none;
+    }
+
+    table {
+      width: 100%;
+      table-layout: auto;
+    }
+
+    @media (min-width: 768px) {
+      table {
+        min-width: 1000px;
+      }
+      th,
+      td {
+        white-space: nowrap; /* Texto en una línea para pantallas grandes */
+      }
+    }
+
+    /* En móviles, permitir que el texto haga wrap y evitar cortes feos */
+    @media (max-width: 767px) {
+      th,
+      td {
+        white-space: normal !important;
+        word-break: keep-all; /* Evita partir palabras y que la última letra baje */
+        overflow-wrap: break-word;
+        padding: 0.25rem 0.4rem !important; /* Menor padding para que quepa mejor */
+        font-size: 0.85rem; /* Fuente un poco más pequeña */
+      }
+
+      table {
+        min-width: 100%;
+      }
+    }
+
+    .table-responsive {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+  </style>
+</head>
+
+<body class="flex min-h-screen">
+
+  <!-- Botón hamburguesa -->
+  <button id="btnSidebar" class="fixed top-4 left-4 z-40 p-2 bg-indigo-600 text-white rounded-md shadow md:hidden">
+    ☰
+  </button>
+
+  <!-- Overlay móvil -->
+  <div id="overlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden md:hidden"></div>
+
+  <!-- Sidebar -->
+  <aside id="sidebar"
+    class="fixed top-0 left-0 h-full w-64 max-w-full bg-gray-900 text-white flex flex-col px-6 py-8 z-40
+           -translate-y-full transition-transform duration-300 overflow-y-auto
+           md:static md:w-64 md:min-h-screen md:translate-y-0 md:transform-none">
+    <div class="mb-10 flex items-center gap-3">
+      <img src="/assets/media/app/SharkFit.png" alt="SharkFit Logo" class="w-10 h-10 object-contain" />
+      <span class="text-xl font-bold text-white">SharkFit</span>
+    </div>
+    <nav class="flex flex-col gap-4">
+      <a href="/rs/dashboard" class="flex items-center gap-3 px-4 py-2 rounded-md bg-gray-800">
+        <i class="bi bi-house-door-fill text-indigo-300 fs-5"></i>
+        <span>Inicio</span>
+      </a>
+      <a href="/rs/crear" class="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-gray-800 transition">
+        <i class="bi bi-person-plus text-yellow-400 fs-5"></i>
+        <span>Crear Cliente</span>
+      </a>
+      <a href="/rs/listar" class="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-gray-800 transition">
+        <i class="bi bi-card-list text-blue-300 fs-5"></i>
+        <span>Listar Clientes</span>
+      </a>
+      <a href="/rs/historialA" class="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-gray-800 transition">
+        <i class="bi bi-journal-text text-gray-300 fs-5"></i>
+        <span>Historial Asistencias</span>
+      </a>
+      <a href="/rs/reportesVentas" class="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-gray-800 transition">
+        <i class="bi bi-bar-chart text-yellow-500 fs-5"></i>
+        <span>Reportes de Ventas</span>
+      </a>
+      <a href="/rs/informeDiario" class="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-gray-800 transition">
+        <i class="bi bi-file-earmark-excel text-green-400 fs-5"></i>
+        <span>Informe Diario (Excel)</span>
+      </a>
+      <a href="/rs/informeSemanal" class="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-gray-800 transition">
+        <i class="bi bi-file-earmark-excel text-green-400 fs-5"></i>
+        <span>Informe Semanal (Excel)</span>
+      </a>
+      <a href="/rs/listarProyectos" class="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-gray-800 transition">
+        <i class="bi bi-folder text-gray-300 fs-5"></i>
+        <span>Ver Proyectos</span>
+      </a>
+      <a href="/rs/crearProyecto" class="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-gray-800 transition">
+        <i class="bi bi-plus-square text-gray-300 fs-5"></i>
+        <span>Crear Proyecto</span>
+      </a>
+      <a href="/rs/incidencias" class="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-gray-800 transition">
+        <i class="bi bi-exclamation-triangle text-red-500 fs-5"></i>
+        <span>Ver/Registrar Incidencia</span>
+      </a>
+      <a href="/rs/crearSolicitud" class="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-gray-800 transition">
+        <i class="bi bi-envelope text-blue-400 fs-5"></i>
+        <span>Crear Solicitud a RRHH</span>
+      </a>
+      <a href="/cuentas/perfil" class="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-gray-800 transition">
+        <i class="bi bi-person-circle text-blue-300 fs-5"></i>
+        <span>Editar mi perfil</span>
+      </a>
+      <a href="/rs/listarStaff" class="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-gray-800 transition">
+        <i class="bi bi-people text-green-400 fs-5"></i>
+        <span>Ver Staff</span>
+      </a>
+      <a href="/logout" class="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-red-600 bg-red-500 mt-auto">
+        <i class="bi bi-box-arrow-right text-white fs-5"></i>
+        <span>Cerrar sesión</span>
+      </a>
+    </nav>
+    <button id="btnCerrarSidebar"
+      class="md:hidden mt-6 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md transition">
+      ← Ocultar menú
+    </button>
+  </aside>
+
+  <!-- Contenido principal -->
+  <main class="content flex-1 mt-16 md:mt-0 p-4 container">
+    <h2 class="mb-4 text-center">👥 Staff de mi Sede</h2>
+
+    <!-- Buscador y filtros -->
+    <div class="row mb-3">
+      <div class="col-md-6">
+        <input type="text" id="buscador" class="form-control"
+          placeholder="Buscar por nombre, email, RUT o teléfono">
+      </div>
+      <div class="col-md-6 text-end">
+        <div class="dropdown">
+          <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+            Filtrar columnas
+          </button>
+          <ul class="dropdown-menu">
+            <li><label class="dropdown-item"><input type="checkbox" class="col-toggle" data-col="direccion"
+                  checked> Dirección</label></li>
+            <li><label class="dropdown-item"><input type="checkbox" class="col-toggle" data-col="emergencia"
+                  checked> Emergencia</label></li>
+            <li><label class="dropdown-item"><input type="checkbox" class="col-toggle" data-col="medico"
+                  checked> Salud</label></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabla -->
+    <div class="table-responsive">
+      <table class="table table-bordered table-hover" id="tablaEmpleados">
+        <thead class="table-dark text-center">
+          <tr>
+            <th>Nombre</th>
+            <th>RUT</th>
+            <th>Email</th>
+            <th>Fono</th>
+            <th class="direccion">Dirección</th>
+            <th class="emergencia">Emergencia</th>
+            <th class="medico">Salud</th>
+          </tr>
+        </thead>
+        <tbody id="tbodyEmpleados"></tbody>
+      </table>
+    </div>
+
+    <div class="text-center mt-4">
+      <a href="/rs/dashboard" class="btn btn-outline-primary">Volver al Dashboard</a>
+    </div>
+  </main>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const tbody = document.getElementById('tbodyEmpleados');
+      const buscador = document.getElementById('buscador');
+      let empleados = [];
+
+      try {
+        const res = await fetch('/rs/listarStaffAPI');
+        empleados = await res.json();
+        renderTabla(empleados);
+      } catch (err) {
+        console.error('Error al cargar empleados:', err);
+      }
+
+      function renderTabla(data) {
+        tbody.innerHTML = '';
+        data.forEach(emp => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${emp.nombre_completo}</td>
+            <td>${emp.rut}</td>
+            <td>${emp.email_personal}</td>
+            <td>${emp.fono_contacto}</td>
+            <td class="direccion">${emp.direccion || ''}</td>
+            <td class="emergencia">${emp.contacto_emergencia} (${emp.relacion}) - ${emp.fono_emergencia}</td>
+            <td class="medico">
+              Enfermedades: ${emp.enfermedades && emp.enfermedades !== 'N/A' ? emp.enfermedades : 'NO'}<br>
+              Alergias: ${emp.alergias && emp.alergias !== 'N/A' ? emp.alergias : 'NO'}
+            </td>`;
+          tbody.appendChild(row);
+        });
+      }
+
+      buscador.addEventListener('input', () => {
+        const filtro = buscador.value.toLowerCase();
+        const filtrados = empleados.filter(emp =>
+          emp.nombre_completo?.toLowerCase().includes(filtro) ||
+          emp.email_personal?.toLowerCase().includes(filtro) ||
+          emp.rut?.toLowerCase().includes(filtro) ||
+          emp.fono_contacto?.toLowerCase().includes(filtro)
+        );
+        renderTabla(filtrados);
+      });
+
+      document.querySelectorAll('.col-toggle').forEach(chk => {
+        chk.addEventListener('change', (e) => {
+          const clase = e.target.dataset.col;
+          document.querySelectorAll(`.${clase}`).forEach(col => {
+            col.classList.toggle('hidden-col', !e.target.checked);
+          });
+        });
+      });
+    });
+
+    // Sidebar toggle
+    document.addEventListener('DOMContentLoaded', () => {
+      const sidebar = document.getElementById('sidebar');
+      const btnSidebar = document.getElementById('btnSidebar');
+      const btnCerrarSidebar = document.getElementById('btnCerrarSidebar');
+      const overlay = document.getElementById('overlay');
+
+      function abrirSidebar() {
+        sidebar.classList.remove('-translate-y-full');
+        overlay.classList.remove('hidden');
+        btnSidebar.classList.add('hidden');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function cerrarSidebar() {
+        sidebar.classList.add('-translate-y-full');
+        overlay.classList.add('hidden');
+        btnSidebar.classList.remove('hidden');
+        document.body.style.overflow = '';
+      }
+
+      btnSidebar.addEventListener('click', abrirSidebar);
+      btnCerrarSidebar.addEventListener('click', cerrarSidebar);
+      overlay.addEventListener('click', cerrarSidebar);
+
+      sidebar.addEventListener('click', (e) => {
+        if (window.innerWidth < 768 && e.target.tagName === 'A') {
+          cerrarSidebar();
+        }
+      });
+    });
+  </script>
+</body>
+
+</html>

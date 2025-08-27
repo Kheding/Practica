@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Documentos por Sede</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+</head>
+
+<body class="bg-light">
+
+  <div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2 class="fw-bold">📁 Documentos por Sede</h2>
+      <a href="/jo/dashboard" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left-circle me-1"></i> Volver al Panel
+      </a>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-bordered table-hover align-middle">
+        <thead class="table-dark">
+          <tr>
+            <th>#</th>
+            <th>Nombre del Archivo</th>
+            <th>Responsable</th>
+            <th>Tipo</th>
+            <th>Fecha Subida</th>
+            <th>Descargar</th>
+          </tr>
+        </thead>
+        <tbody id="tabla-documentos">
+          <tr>
+            <td colspan="6" class="text-center">Cargando documentos...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const tabla = document.getElementById('tabla-documentos');
+      try {
+        const res = await fetch('/jo/documentos/listar');
+        const documentos = await res.json();
+
+        if (documentos.length === 0) {
+          tabla.innerHTML = `<tr><td colspan="6" class="text-center text-muted">No hay documentos registrados.</td></tr>`;
+          return;
+        }
+
+        tabla.innerHTML = '';
+        documentos.forEach((doc, i) => {
+          const fila = `
+            <tr>
+              <td>${i + 1}</td>
+              <td>${doc.nombre}</td>
+              <td>${doc.nombre_completo}</td>
+              <td>${doc.tipo}</td>
+              <td>${new Date(doc.fecha_subida).toLocaleDateString()}</td>
+              <td>
+                <a href="${doc.ruta}" download class="btn btn-sm btn-outline-primary">
+                  <i class="bi bi-download"></i> Descargar
+                </a>
+              </td>
+            </tr>
+          `;
+          tabla.insertAdjacentHTML('beforeend', fila);
+        });
+      } catch (err) {
+        console.error('Error al cargar documentos:', err);
+        tabla.innerHTML = `<tr><td colspan="6" class="text-center text-danger">Error al cargar documentos.</td></tr>`;
+      }
+    });
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

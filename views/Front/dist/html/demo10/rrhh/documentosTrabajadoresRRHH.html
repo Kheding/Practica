@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Documentos Administrativos</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .btn-download {
+      transition: transform 0.2s;
+    }
+    .btn-download:hover {
+      transform: scale(1.1);
+    }
+  </style>
+</head>
+<body class="bg-light">
+  <div class="container py-4">
+    <h2 class="mb-4">Documentos Subidos por Administrativos</h2>
+
+    <!-- Filtros -->
+    <div class="row g-3 mb-3">
+      <div class="col-md-4">
+        <input type="text" id="buscador" class="form-control" placeholder="Buscar por nombre o RUT...">
+      </div>
+      <div class="col-md-3">
+        <input type="date" id="fechaDesde" class="form-control" placeholder="Desde">
+      </div>
+      <div class="col-md-3">
+        <input type="date" id="fechaHasta" class="form-control" placeholder="Hasta">
+      </div>
+      <div class="col-md-2 d-flex align-items-center">
+        <input type="checkbox" id="verDescargados" class="form-check-input me-2" />
+        <label for="verDescargados" class="form-check-label">Ver descargados</label>
+      </div>
+    </div>
+
+    <!-- Tabla -->
+    <div class="table-responsive">
+      <table class="table table-bordered bg-white">
+        <thead class="table-dark">
+          <tr>
+            <th>Nombre</th>
+            <th>RUT</th>
+            <th>Documento</th>
+            <th>Tipo</th>
+            <th>Razón</th>
+            <th>Fecha</th>
+            <th>Visto</th>
+            <th>Descargar</th>
+          </tr>
+        </thead>
+        <tbody id="tablaDocumentos"></tbody>
+      </table>
+    </div>
+
+    <a href="/rrhh/dashboard" class="btn btn-secondary mt-3">Volver al Dashboard</a>
+  </div>
+
+  <script>
+    let documentos = [];
+
+    async function cargarDocumentos() {
+      const response = await fetch('/rrhh/documentos/listar');
+      const data = await response.json();
+      documentos = data.documentos;
+      renderTabla();
+    }
+
+    function renderTabla() {
+      const tbody = document.getElementById('tablaDocumentos');
+      const term = document.getElementById('buscador').value.toLowerCase();
+      const mostrarDescargados = document.getElementById('verDescargados').checked;
+      const desde = document.getElementById('fechaDesde').value;
+      const hasta = document.getElementById('fechaHasta').value;
+
+      tbody.innerHTML = '';
+
+      documentos
+        .filter(d => {
+          const coincideBusqueda = d.Nombre.toLowerCase().includes(term) || d.RUT.toLowerCase().includes(term);
+          const coincideDescargado = mostrarDescargados || !d.descargado;
+
+          const fechaDoc = new Date(d.fecha_subida);
+          const desdeFecha = desde ? new Date(desde) : null;
+          const hastaFecha = hasta ? new Date(hasta) : null;
+
+          const coincideFecha =
+            (!desdeFecha || fechaDoc >= desdeFecha) &&
+            (!hastaFecha || fechaDoc <= hastaFecha);
+
+          return coincideBusqueda && coincideDescargado && coincideFecha;
+        })
+        .forEach(d => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${d.Nombre}</td>
+            <td>${d.RUT}</td>
+            <td>${d.nombre_documento}</td>
+            <td>${d.tipo}</td>
+            <td>${d.razon}</td>
+            <td>${new Date(d.fecha_subida).toLocaleDateString()}</td>
+            <td>${d.visto ? 'Sí' : 'No'}</td>
+            <td>
+              <a href="${d.url}" class="btn btn-sm btn-primary btn-download" onclick="marcarComoVisto(${d.id})" download>
+                Descargar
+              </a>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+    }
+
+    function marcarComoVisto(id) {
+      fetch(`/rrhh/documentos/marcar-visto/${id}`, { method: 'POST' }).then(() => {
+        const doc = documentos.find(d => d.id === id);
+        if (doc) doc.visto = 1;
+        renderTabla();
+      });
+    }
+
+    // Eventos
+    document.getElementById('buscador').addEventListener('input', renderTabla);
+    document.getElementById('verDescargados').addEventListener('change', renderTabla);
+    document.getElementById('fechaDesde').addEventListener('change', renderTabla);
+    document.getElementById('fechaHasta').addEventListener('change', renderTabla);
+
+    cargarDocumentos();
+  </script>
+</body>
+</html>

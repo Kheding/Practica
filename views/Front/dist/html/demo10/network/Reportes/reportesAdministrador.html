@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Reportes Administrativos</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+</head>
+
+<body class="bg-light">
+
+  <div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2 class="fw-bold">Reportes Administrativos</h2>
+      <a href="/admin/panel" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left-circle me-1"></i> Volver al Panel
+      </a>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+      <div class="card-header bg-primary text-white">Indicadores Generales - Mes Actual</div>
+      <div class="card-body">
+        <ul class="list-group" id="indicadores-list">
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            Total Administrativos
+            <span class="badge bg-primary rounded-pill" id="totalAdministrativos">0</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            Nuevos este mes
+            <span class="badge bg-success rounded-pill" id="nuevosClientes">0</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            Solicitudes Pendientes
+            <span class="badge bg-warning text-dark rounded-pill" id="solicitudesPendientes">0</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            Documentos Agregados
+            <span class="badge bg-secondary rounded-pill" id="documentosAgregados">0</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            Incidencias Pendientes
+            <span class="badge bg-danger rounded-pill" id="incidenciasPendientes">0</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            Capacitaciones Pendientes
+            <span class="badge bg-info rounded-pill" id="capacitacionesPendientes">0</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="d-flex gap-3 mb-5">
+      <button class="btn btn-outline-primary flex-grow-1" data-format="pdf">
+        <i class="bi bi-file-earmark-pdf me-2"></i> Exportar PDF
+      </button>
+      <button class="btn btn-outline-success flex-grow-1" data-format="excel">
+        <i class="bi bi-file-earmark-spreadsheet me-2"></i> Exportar Excel
+      </button>
+      <button class="btn btn-outline-secondary flex-grow-1" data-format="word">
+        <i class="bi bi-file-earmark-word me-2"></i> Exportar Word
+      </button>
+    </div>
+  </div>
+
+  <script>
+    async function cargarIndicadores() {
+      try {
+        const res = await fetch('/admin/reportes'); // Ajusta esta ruta según tu backend
+        if (!res.ok) throw new Error('Error al obtener datos');
+        const data = await res.json();
+
+        document.getElementById('totalAdministrativos').textContent = data.totalAdministrativos ?? 0;
+        document.getElementById('nuevosClientes').textContent = data.nuevosClientes ?? 0;
+        document.getElementById('solicitudesPendientes').textContent = data.solicitudesPendientes ?? 0;
+        document.getElementById('documentosAgregados').textContent = data.documentosAgregados ?? 0;
+        document.getElementById('incidenciasPendientes').textContent = data.incidenciasPendientes ?? 0;
+        document.getElementById('capacitacionesPendientes').textContent = data.capacitacionesPendientes ?? 0;
+
+      } catch (error) {
+        alert('Error al cargar indicadores: ' + error.message);
+      }
+    }
+
+    function descargarReporte(formato) {
+      const url = `/admin/reportes?formato=${formato}`;
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `reporte_administrativos.${formato === 'excel' ? 'xlsx' : formato === 'word' ? 'docx' : 'pdf'}`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    document.querySelectorAll('button[data-format]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        descargarReporte(btn.getAttribute('data-format'));
+      });
+    });
+
+    window.addEventListener('DOMContentLoaded', cargarIndicadores);
+  </script>
+
+</body>
+</html>

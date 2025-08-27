@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <title>Asistencias Cliente</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+</head>
+<body class="bg-light">
+    <div class="container py-5">
+        <h2 class="mb-4">Asistencias del Cliente</h2>
+
+        <div class="mb-3">
+            <label for="clienteId" class="form-label">ID Cliente</label>
+            <input type="number" id="clienteId" class="form-control" placeholder="Ingrese ID del cliente" />
+        </div>
+
+        <button id="btnBuscar" class="btn btn-primary mb-3">Buscar Asistencias</button>
+
+        <div class="table-responsive">
+            <table class="table table-bordered bg-white">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID Asistencia</th>
+                        <th>ID Cliente</th>
+                        <th>Fecha</th>
+                        <th>Hora Entrada</th>
+                        <th>Hora Salida</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaAsistencias">
+                    <!-- Datos simulados de ejemplo -->
+                    <tr>
+                        <td>101</td>
+                        <td>123</td>
+                        <td>2025-06-01</td>
+                        <td>08:55:00</td>
+                        <td>18:05:00</td>
+                    </tr>
+                    <tr>
+                        <td>102</td>
+                        <td>123</td>
+                        <td>2025-06-02</td>
+                        <td>09:00:00</td>
+                        <td>18:00:00</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <a href="/rrhh/dashboard" class="btn btn-secondary mt-3">Volver al Dashboard</a>
+    </div>
+
+    <script>
+        document.getElementById('btnBuscar').addEventListener('click', async () => {
+            const clienteId = document.getElementById('clienteId').value.trim();
+            if (!clienteId) {
+                alert('Por favor ingrese un ID de cliente válido.');
+                return;
+            }
+
+            try {
+                const res = await fetch(`/api/asistencia/${clienteId}`);
+                if (!res.ok) throw new Error('Error al obtener la asistencia.');
+
+                const data = await res.json();
+                const tbody = document.getElementById('tablaAsistencias');
+                tbody.innerHTML = '';
+
+                if (!data.asistencia || data.asistencia.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="5" class="text-center">No hay registros de asistencia para este cliente.</td></tr>`;
+                    return;
+                }
+
+                data.asistencia.forEach(registro => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${registro.IdAsistencia}</td>
+                        <td>${registro.IdCliente}</td>
+                        <td>${new Date(registro.Fecha).toLocaleDateString()}</td>
+                        <td>${registro.HoraEntrada || '-'}</td>
+                        <td>${registro.HoraSalida || '-'}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        });
+    </script>
+</body>
+</html>

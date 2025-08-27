@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Historial de Ventas - SharkFit</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="/assets/media/app/SharkFit.png" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+
+    tr:hover {
+      background-color: #f3f4f6;
+    }
+  </style>
+</head>
+<body class="bg-gray-100 flex min-h-screen">
+
+  <!-- Sidebar -->
+  <aside class="w-64 bg-gray-900 text-white flex flex-col px-6 py-8">
+    <div class="mb-10 flex items-center gap-3">
+      <img src="/assets/media/app/SharkFit.png" alt="SharkFit Logo" class="w-10 h-10 object-contain" />
+      <span class="text-xl font-bold text-white">SharkFit</span>
+    </div>
+
+    <nav class="flex flex-col gap-4">
+      <a href="/vendedor/dashboard" class="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-gray-800 transition">
+        <svg class="w-5 h-5 text-indigo-300" fill="none" stroke="currentColor" stroke-width="2"
+             viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round"
+                d="M3 12l2-2m0 0l7-7 7 7M13 5v6h6" />
+        </svg>
+        <span>Inicio</span>
+      </a>
+
+      <a href="/vendedor/crear-venta-producto/vista" class="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-gray-800 transition">
+        <svg class="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" stroke-width="2"
+             viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+        </svg>
+        <span>Crear Venta</span>
+      </a>
+
+      <a href="/vendedor/historial-ventas" class="flex items-center gap-3 px-4 py-2 rounded-md bg-gray-800">
+        <svg class="w-5 h-5 text-indigo-300" fill="none" stroke="currentColor" stroke-width="2"
+             viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round"
+                d="M9 17v-2a4 4 0 014-4h4m0 0v6m0 0l-2-2m2 2l2-2" />
+        </svg>
+        <span>Mis Ventas</span>
+      </a>
+
+      <a href="/vendedor/crear-cliente" class="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-gray-800 transition">
+        <svg class="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" stroke-width="2"
+             viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+        </svg>
+        <span>Crear Cliente</span>
+      </a>
+
+      <a href="/vendedor/historial-clientes" class="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-gray-800 transition">
+        <svg class="w-5 h-5 text-indigo-300" fill="none" stroke="currentColor" stroke-width="2"
+             viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round"
+                d="M5 13l4 4L19 7" />
+        </svg>
+        <span>Historial Clientes</span>
+      </a>
+
+      <a href="/logout" class="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-red-600 bg-red-500 mt-auto">
+        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2"
+             viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7" />
+        </svg>
+        <span>Cerrar sesión</span>
+      </a>
+    </nav>
+  </aside>
+
+  <!-- Contenido principal -->
+  <main class="flex-1 p-8">
+    <header class="mb-6">
+      <h1 class="text-3xl font-bold text-gray-800 mb-1">Historial de Ventas</h1>
+      <p class="text-sm text-gray-500">Aquí puedes revisar todas las ventas realizadas por ti.</p>
+    </header>
+
+    <section class="bg-white p-6 rounded-xl shadow">
+      <h2 class="text-lg font-semibold text-gray-700 mb-4">Listado de Ventas</h2>
+      <div class="overflow-x-auto">
+        <table class="min-w-full border border-gray-200 divide-y divide-gray-200 text-sm">
+          <thead class="bg-gray-100 text-left text-gray-600 font-semibold">
+            <tr>
+              <th class="px-4 py-2">Cliente</th>
+              <th class="px-4 py-2">Producto</th>
+              <th class="px-4 py-2">Fecha</th>
+            </tr>
+          </thead>
+          <tbody id="tablaVentas" class="divide-y divide-gray-100 text-gray-700">
+            <!-- Aquí se cargan las filas dinámicamente -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        const res = await fetch('/vendedor/historial-ventas/data');
+        if (!res.ok) throw new Error('Error al obtener las ventas');
+        const ventas = await res.json();
+
+        const tbody = document.getElementById('tablaVentas');
+        tbody.innerHTML = '';
+
+        if (ventas.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="3" class="px-4 py-4 text-center text-gray-500">No hay ventas registradas</td></tr>`;
+        } else {
+          ventas.forEach(v => {
+            const fecha = new Date(v.fecha).toLocaleDateString('es-CL', {
+              day: '2-digit', month: '2-digit', year: 'numeric'
+            });
+            const fila = `
+              <tr class="hover:bg-gray-50 transition">
+                <td class="px-4 py-2">${v.cliente}</td>
+                <td class="px-4 py-2">${v.producto}</td>
+                <td class="px-4 py-2">${fecha}</td>
+              </tr>
+            `;
+            tbody.insertAdjacentHTML('beforeend', fila);
+          });
+        }
+      } catch (error) {
+        console.error(error);
+        document.getElementById('tablaVentas').innerHTML = `
+          <tr><td colspan="3" class="px-4 py-4 text-center text-red-500">Error al cargar los datos</td></tr>
+        `;
+      }
+    });
+  </script>
+
+</body>
+</html>

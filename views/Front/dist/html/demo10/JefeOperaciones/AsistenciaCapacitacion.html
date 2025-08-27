@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Asistencia Capacitación</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-light">
+    <div class="container py-4">
+        <h2 class="mb-4">Asistencia de Capacitación</h2>
+        <a href="/jo/capacitaciones" class="btn btn-outline-secondary mb-3">← Volver</a>
+        <a href="/jo/dashboard" class="btn btn-outline-secondary mb-3">← Volver al Dashboard</a>
+        <table class="table table-striped bg-white" id="tablaAsistencia">
+            <thead class="table-dark">
+                <tr>
+                    <th>Responsable</th>
+                    <th>RUT</th>
+                    <th>Estado</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const idCapacitacion = urlParams.get('id');
+
+        async function cargarAsistencias() {
+            try {
+                const res = await fetch('/jo/capacitaciones/asistencia/listar?id=' + idCapacitacion);
+                const data = await res.json();
+                const tbody = document.querySelector('#tablaAsistencia tbody');
+                tbody.innerHTML = '';
+
+                if (data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" class="text-center">No hay asistentes registrados para esta capacitación.</td></tr>';
+                    return;
+                }
+
+                data.forEach(row => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                    <td>${row.nombre_completo}</td>
+                    <td>${row.rut || '-'}</td>
+                    <td>${row.asistio ? 'Asistió' : 'No asistió'}</td>
+                    <td>
+                        <button class="btn btn-${row.asistio ? 'danger' : 'success'} btn-sm" onclick="marcarAsistencia(${row.idCapacitacion}, ${row.idResponsable}, ${row.asistio ? 0 : 1})">
+                            ${row.asistio ? 'Desmarcar' : 'Marcar'}
+                        </button>
+                    </td>
+                `;
+                    tbody.appendChild(tr);
+                });
+            } catch (err) {
+                alert('Error al cargar la asistencia.');
+            }
+        }
+
+        async function marcarAsistencia(capacitacionId, responsableId, nuevoEstado) {
+            try {
+                const res = await fetch('/jo/capacitaciones/asistencia/actualizar', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        idCapacitacion: capacitacionId,
+                        responsable_id: responsableId,
+                        asistio: nuevoEstado
+                    })
+                });
+
+                const data = await res.json();
+                if (res.ok) {
+                    await cargarAsistencias();
+                } else {
+                    alert(data.error || 'Error al actualizar asistencia.');
+                }
+            } catch (err) {
+                alert('Error al actualizar asistencia.');
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', cargarAsistencias);
+    </script>
+</body>
+
+</html>

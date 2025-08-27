@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Historial Clientes - SharkFit</title>
+
+  <link rel="icon" type="image/png" href="/assets/media/app/SharkFit.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    /* Filas alternadas y hover */
+    tbody tr:nth-child(even) {
+      background-color: #f9fafb; /* bg-gray-50 */
+    }
+    tbody tr:hover {
+      background-color: #fef3c7; /* bg-yellow-100 */
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body class="bg-gray-100 flex min-h-screen">
+
+  <!-- Sidebar -->
+  <aside class="w-64 bg-gray-900 text-white flex flex-col px-6 py-8">
+    <div class="mb-10 flex items-center gap-3">
+      <img src="/assets/media/app/SharkFit.png" alt="SharkFit Logo" class="w-10 h-10 object-contain" />
+      <span class="text-xl font-bold text-white">SharkFit</span>
+    </div>
+
+    <nav class="flex flex-col gap-4">
+      <a href="/vendedor/dashboard" class="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-gray-800 transition">
+        <svg class="w-5 h-5 text-indigo-300" fill="none" stroke="currentColor" stroke-width="2"
+             viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round"
+                d="M3 12l2-2m0 0l7-7 7 7M13 5v6h6" />
+        </svg>
+        <span>Inicio</span>
+      </a>
+
+      <a href="/vendedor/crear-venta-producto/vista" class="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-gray-800 transition">
+        <svg class="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" stroke-width="2"
+             viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+        </svg>
+        <span>Crear Venta</span>
+      </a>
+
+      <a href="/vendedor/historial-ventas" class="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-gray-800 transition">
+        <svg class="w-5 h-5 text-indigo-300" fill="none" stroke="currentColor" stroke-width="2"
+             viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round"
+                d="M9 17v-2a4 4 0 014-4h4m0 0v6m0 0l-2-2m2 2l2-2" />
+        </svg>
+        <span>Mis Ventas</span>
+      </a>
+
+      <a href="/vendedor/crear-cliente" class="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-gray-800 transition">
+        <svg class="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" stroke-width="2"
+             viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+        </svg>
+        <span>Crear Cliente</span>
+      </a>
+
+      <a href="/vendedor/historial-clientes" class="flex items-center gap-3 px-4 py-2 rounded-md bg-gray-800 transition">
+        <svg class="w-5 h-5 text-blue-300" fill="none" stroke="currentColor" stroke-width="2"
+             viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+        </svg>
+        <span>Historial Clientes</span>
+      </a>
+
+      <a href="/logout" class="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-red-600 bg-red-500 mt-auto">
+        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2"
+             viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round"
+                d="M17 16l4-4m0 0l-4-4m4 4H7" />
+        </svg>
+        <span>Cerrar sesión</span>
+      </a>
+    </nav>
+  </aside>
+
+  <!-- Contenido principal -->
+  <main class="flex-1 p-8">
+    <h1 class="text-3xl font-bold text-gray-800">Historial de Clientes</h1>
+    <p id="nombreVendedor" class="text-gray-600 text-lg mt-1 mb-6"></p>
+
+    <div class="overflow-x-auto bg-white rounded-xl shadow">
+      <table class="min-w-full border border-gray-300">
+        <thead class="bg-gray-200 text-gray-700">
+          <tr>
+            <th class="border border-gray-300 px-4 py-2 text-left">ID</th>
+            <th class="border border-gray-300 px-4 py-2 text-left">Nombre Completo</th>
+            <th class="border border-gray-300 px-4 py-2 text-left">Correo Electrónico</th>
+            <th class="border border-gray-300 px-4 py-2 text-left">Teléfono</th>
+            <th class="border border-gray-300 px-4 py-2 text-left">Fecha Registro</th>
+          </tr>
+        </thead>
+        <tbody id="tablaClientes">
+          <!-- Datos dinámicos aquí -->
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <script>
+    async function cargarClientes() {
+      try {
+        const res = await fetch('/vendedor/historial-clientes/data');
+        if (!res.ok) throw new Error('Error al cargar clientes');
+        const clientes = await res.json();
+
+        const tbody = document.getElementById('tablaClientes');
+        tbody.innerHTML = ''; // limpiar tabla
+
+        if (clientes.length > 0) {
+          const nombreVendedor = clientes[0].NombreVendedor || 'Desconocido';
+          document.getElementById('nombreVendedor').textContent = `Vendedor: ${nombreVendedor}`;
+        }
+
+        clientes.forEach(c => {
+          const nombreCompleto = [c.Nombre, c.SegundoNombre, c.Apellido, c.SegundoApellido].filter(Boolean).join(' ');
+          const fechaRegistro = new Date(c.FechaRegistro).toLocaleDateString();
+
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td class="border border-gray-300 px-4 py-2">${c.IdCliente}</td>
+            <td class="border border-gray-300 px-4 py-2">${nombreCompleto}</td>
+            <td class="border border-gray-300 px-4 py-2">${c.CorreoElectronico}</td>
+            <td class="border border-gray-300 px-4 py-2">${c.TelefonoMovil || ''}</td>
+            <td class="border border-gray-300 px-4 py-2">${fechaRegistro}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (error) {
+        console.error(error);
+        alert('Error al cargar clientes');
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', cargarClientes);
+  </script>
+
+</body>
+</html>

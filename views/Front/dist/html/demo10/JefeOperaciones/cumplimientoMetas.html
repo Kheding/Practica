@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Cumplimiento de Metas</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-light">
+    <div class="container py-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold">Cumplimiento de Metas por Sede</h2>
+            <a href="/jo/panel" class="btn btn-secondary">Volver al Dashboard</a>
+        </div>
+
+        <div id="alerta-error" class="alert alert-danger d-none"></div>
+
+        <!-- Metas de Asistencia -->
+        <div class="card mb-4 shadow-sm">
+            <div class="card-header bg-primary text-white">
+                Asistencia de Administrativos del Mes
+            </div>
+            <div class="card-body">
+                <p class="fw-semibold">Meta mensual: <span id="asistencia-meta">0</span></p>
+                <p class="fw-semibold">Actual: <span id="asistencia-actual">0</span></p>
+                <div class="progress">
+                    <div id="barra-asistencia" class="progress-bar bg-primary" style="width: 0%">0%</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Metas de Nuevos Clientes -->
+        <div class="card shadow-sm">
+            <div class="card-header bg-success text-white">
+                Nuevos Clientes del Mes
+            </div>
+            <div class="card-body">
+                <p class="fw-semibold">Meta mensual: <span id="clientes-meta">0</span></p>
+                <p class="fw-semibold">Actual: <span id="clientes-actual">0</span></p>
+                <div class="progress">
+                    <div id="barra-clientes" class="progress-bar bg-success" style="width: 0%">0%</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", async () => {
+            try {
+                const res = await fetch('/jo/cumplimiento-metas');
+                const data = await res.json();
+
+                const asistenciaMeta = data.asistencia.meta;
+                const asistenciaActual = data.asistencia.actual;
+                const asistenciaPorcentaje = Math.min((asistenciaActual / asistenciaMeta) * 100, 100);
+
+                const clientesMeta = data.nuevosClientes.meta;
+                const clientesActual = data.nuevosClientes.actual;
+                const clientesPorcentaje = Math.min((clientesActual / clientesMeta) * 100, 100);
+
+                // Asistencia
+                document.getElementById('asistencia-meta').textContent = asistenciaMeta;
+                document.getElementById('asistencia-actual').textContent = asistenciaActual;
+                document.getElementById('barra-asistencia').style.width = asistenciaPorcentaje + '%';
+                document.getElementById('barra-asistencia').textContent = Math.floor(asistenciaPorcentaje) + '%';
+
+                // Clientes
+                document.getElementById('clientes-meta').textContent = clientesMeta;
+                document.getElementById('clientes-actual').textContent = clientesActual;
+                document.getElementById('barra-clientes').style.width = clientesPorcentaje + '%';
+                document.getElementById('barra-clientes').textContent = Math.floor(clientesPorcentaje) + '%';
+
+            } catch (err) {
+                const alerta = document.getElementById('alerta-error');
+                alerta.textContent = 'Error al cargar los datos de cumplimiento de metas.';
+                alerta.classList.remove('d-none');
+            }
+        });
+    </script>
+</body>
+
+</html>

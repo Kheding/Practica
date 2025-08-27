@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dashboard Coordinador Comercial</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #e0e7ff, #f5f7fa);
+      color: #2c3e50;
+      min-height: 100vh;
+    }
+
+    .kpi-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 20px rgb(79 107 237 / 0.25);
+    }
+
+    /* Estilos para el título con efecto animado */
+    .title-container {
+      margin-top: 2rem;
+      margin-bottom: 2.5rem;
+      text-align: center;
+    }
+    h1.title {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: #4f6bed;
+      border-bottom: 4px solid #a3bffa;
+      display: inline-block;
+      padding-bottom: 0.3rem;
+      margin: 0 auto;
+      animation: fade-in 0.6s ease-out;
+    }
+    @keyframes fade-in {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    #loader {
+      border: 6px solid #f3f3f3;
+      border-top: 6px solid #4f6bed;
+      border-radius: 50%;
+      width: 48px;
+      height: 48px;
+      animation: spin 1s linear infinite;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      margin: -24px 0 0 -24px;
+      display: none;
+      z-index: 1000;
+    }
+
+    #errorToast {
+      position: fixed;
+      bottom: 1rem;
+      right: 1rem;
+      background: #e74c3c;
+      color: white;
+      padding: 1rem 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      font-weight: 700;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      z-index: 1100;
+    }
+
+    #errorToast.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* Ajuste tamaño título en móvil */
+    @media (max-width: 600px) {
+      h1.title {
+        font-size: 1.75rem;
+      }
+    }
+  </style>
+</head>
+<body class="flex min-h-screen">
+
+  <!-- Botón hamburguesa móvil -->
+  <button id="btnSidebar" class="fixed top-4 left-4 z-30 p-2 bg-indigo-600 text-white rounded-md shadow md:hidden">
+    ☰
+  </button>
+
+  <!-- Sidebar -->
+  <aside id="sidebar" class="fixed md:static top-0 left-0 w-64 bg-gray-900 text-white flex flex-col px-6 py-8 min-h-screen z-20
+                           transform -translate-x-full md:translate-x-0 transition-transform duration-300 overflow-y-auto">
+    <div class="mb-10 flex items-center gap-3">
+      <img src="/assets/media/app/SharkFit.png" alt="SharkFit Logo" class="w-10 h-10 object-contain" />
+      <span class="text-xl font-bold text-white">SharkFit</span>
+    </div>
+
+    <nav class="flex flex-col gap-4">
+      <a href="/coordinador/dashboard" class="flex items-center gap-3 px-4 py-2 rounded-md bg-gray-800">
+        <span>Dashboard</span>
+      </a>
+      <a href="/coordinador/crear" class="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-gray-800 transition">
+        <span>Crear Cliente</span>
+      </a>
+      <a href="/coordinador/comparar-vs-metas" class="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-gray-800 transition">
+        <span>Comparar vs Metas</span>
+      </a>
+      <a href="/coordinador/bajo-rendimiento" class="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-gray-800 transition">
+        <span>Bajo Rendimiento</span>
+      </a>
+      <a href="/coordinador/focos-debiles" class="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-gray-800 transition">
+        <span>Focos Débiles</span>
+      </a>
+      <a href="/coordinador/diagnostico-problema" class="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-gray-800 transition">
+        <span>Diagnóstico Problema</span>
+      </a>
+      <a href="/coordinador/rendimiento-vendedores" class="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-gray-800 transition">
+        <span>Rendimiento Vendedores</span>
+      </a>
+      <a href="/logout" class="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-red-600 bg-red-500 mt-auto">
+        <span>Cerrar sesión</span>
+      </a>
+    </nav>
+
+    <button id="btnCerrarSidebar" class="md:hidden mt-6 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md transition">
+      ← Ocultar menú
+    </button>
+  </aside>
+
+  <!-- Contenido principal -->
+  <main class="flex-1 p-6 md:p-10 relative">
+    <div class="title-container">
+      <h1 class="title">KPIs Principales</h1>
+    </div>
+
+    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4" id="kpiPanel">
+      <div class="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition text-center">
+        <h2 id="kpi-conversion" class="text-4xl font-bold text-indigo-600">...</h2>
+        <p class="text-gray-600 mt-2 font-semibold">Tasa de Conversión</p>
+      </div>
+      <div class="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition text-center">
+        <h2 id="kpi-nuevos" class="text-4xl font-bold text-indigo-600">...</h2>
+        <p class="text-gray-600 mt-2 font-semibold">Nuevos este Mes</p>
+      </div>
+      <div class="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition text-center">
+        <h2 id="kpi-clientes" class="text-4xl font-bold text-indigo-600">...</h2>
+        <p class="text-gray-600 mt-2 font-semibold">Total Clientes</p>
+      </div>
+      <div class="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition text-center">
+        <h2 id="kpi-promedio" class="text-4xl font-bold text-indigo-600">...</h2>
+        <p class="text-gray-600 mt-2 font-semibold">Valor Promedio Plan</p>
+      </div>
+    </div>
+    <div id="loader"></div>
+    <div id="errorToast"></div>
+  </main>
+
+  <script>
+    function showLoader() {
+      document.getElementById('loader').style.display = 'block';
+      document.getElementById('kpiPanel').style.opacity = '0.5';
+    }
+    function hideLoader() {
+      document.getElementById('loader').style.display = 'none';
+      document.getElementById('kpiPanel').style.opacity = '1';
+    }
+    function showError(message) {
+      const toast = document.getElementById('errorToast');
+      toast.textContent = message;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 4000);
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      showLoader();
+      try {
+        const res = await fetch('/coordinador/dashboardData');
+        if (!res.ok) throw new Error('Error en la respuesta del servidor');
+        const data = await res.json();
+        document.getElementById('kpi-clientes').textContent = data.totalClientes ?? '0';
+        document.getElementById('kpi-nuevos').textContent = data.nuevosEsteMes ?? '0';
+        document.getElementById('kpi-conversion').textContent = (data.tasaConversion ?? '0') + '%';
+        document.getElementById('kpi-promedio').textContent = '$' + (data.valorPromedio ?? '0');
+      } catch (err) {
+        console.error('Error al cargar KPIs:', err);
+        showError('No se pudo cargar los KPIs');
+      } finally {
+        hideLoader();
+      }
+    });
+
+    // Sidebar lógica
+    const btnSidebar = document.getElementById('btnSidebar');
+    const sidebar = document.getElementById('sidebar');
+    const btnCerrarSidebar = document.getElementById('btnCerrarSidebar');
+
+    btnSidebar?.addEventListener('click', () => {
+      sidebar.classList.remove('-translate-x-full');
+      btnSidebar.classList.add('hidden');
+    });
+
+    btnCerrarSidebar?.addEventListener('click', () => {
+      sidebar.classList.add('-translate-x-full');
+      btnSidebar.classList.remove('hidden');
+    });
+
+    sidebar?.addEventListener('click', (e) => {
+      if (window.innerWidth < 768 && e.target.tagName === 'A') {
+        sidebar.classList.add('-translate-x-full');
+        btnSidebar.classList.remove('hidden');
+      }
+    });
+  </script>
+</body>
+</html>

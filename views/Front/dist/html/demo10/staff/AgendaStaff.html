@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Agenda de Clases - Staff</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+</head>
+
+<body class="container py-4">
+  <h2 class="mb-4">Agenda de Clases</h2>
+
+  <!-- Tabla de clases -->
+  <div class="table-responsive mb-4">
+    <table class="table table-bordered table-hover bg-white">
+      <thead class="table-dark">
+        <tr>
+          <th>ID Clase</th>
+          <th>Fecha</th>
+          <th>Descripción</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="clasesBody"></tbody>
+    </table>
+  </div>
+
+  <a href="/staff/dashboard" class="btn btn-secondary mb-4">Volver al Dashboard</a>
+
+  <!-- Modal para ver clientes inscritos y marcar asistencia -->
+  <div class="modal fade" id="modalClientes" tabindex="-1" aria-labelledby="modalClientesLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalClientesLabel">Clientes Inscritos a la Clase</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>Cliente</th>
+                <th>Asistencia</th>
+              </tr>
+            </thead>
+            <tbody id="clientesClaseBody"></tbody>
+          </table>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    let clases = [];
+    let clientesClase = [];
+    let idClaseActual = null;
+
+    async function cargarClases() {
+      try {
+        const res = await fetch('/staff/apiListarAgenda');
+        if (!res.ok) throw new Error('Error al cargar clases');
+        clases = await res.json();
+        renderClases();
+      } catch (err) {
+        alert('No se pudo cargar la agenda de clases');
+        console.error(err);
+      }
+    }
+
+    function renderClases() {
+      const tbody = document.getElementById('clasesBody');
+      tbody.innerHTML = '';
+      clases.forEach(clase => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${clase.IdAgenda}</td>
+          <td>${new Date(clase.Fecha).toLocaleString()}</td>
+          <td>${clase.Descripcion || ''}</td>
+          <td>
+            <button class="btn btn-sm btn-primary" onclick="verClientes(${clase.IdAgenda}, '${clase.Descripcion || ''}')">Ver Clase</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    async function verClientes(idAgenda, descripcion) {
+      idClaseActual = idAgenda;
+      document.getElementById('modalClientesLabel').textContent = `Clientes Inscritos - ${descripcion}`;
+      try {
+        const res = await fetch(`/staff/apiListarClientesClase/${idAgenda}`);
+        if (!res.ok) throw new Error('Error al cargar clientes');
+        clientesClase = await res.json();
+        renderClientesClase();
+        const modal = new bootstrap.Modal(document.getElementById('modalClientes'));
+        modal.show();
+      } catch (err) {
+        alert('No se pudo cargar los clientes inscritos');
+        console.error(err);
+      }
+    }
+
+    function renderClientesClase() {
+      const tbody = document.getElementById('clientesClaseBody');
+      tbody.innerHTML = '';
+      clientesClase.forEach(c => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${c.Nombre} ${c.Apellido}</td>
+          <td class="text-center">
+            <input type="checkbox" ${c.Asistio ? 'checked' : ''} onchange="toggleAsistencia(${c.IdAgendaCliente}, this.checked)">
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    async function toggleAsistencia(idAgendaCliente, asistio) {
+      try {
+        const res = await fetch('/staff/apiMarcarAsistencia', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ idAgendaCliente, asistio })
+        });
+        if (!res.ok) throw new Error('Error actualizando asistencia');
+      } catch (err) {
+        alert('No se pudo actualizar la asistencia');
+        console.error(err);
+      }
+    }
+
+    // Carga inicial
+    cargarClases();
+  </script>
+</body>
+
+</html>

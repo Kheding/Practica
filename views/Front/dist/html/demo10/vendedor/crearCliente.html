@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Crear Cliente - SharkFit</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="/assets/media/app/SharkFit.png" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f3f4f6;
+    }
+    ::placeholder {
+      color: #9ca3af;
+      opacity: 1;
+    }
+    input, select {
+      box-shadow: 0 1px 3px rgb(0 0 0 / 0.1);
+    }
+  </style>
+</head>
+<body class="flex min-h-screen">
+
+  <!-- Sidebar -->
+  <aside class="w-64 bg-gray-900 text-white flex flex-col px-6 py-8">
+    <div class="mb-10 flex items-center gap-3">
+      <img src="/assets/media/app/SharkFit.png" alt="SharkFit Logo" class="w-10 h-10 object-contain" />
+      <span class="text-xl font-bold text-white">SharkFit</span>
+    </div>
+
+    <nav class="flex flex-col gap-4">
+      <a href="/vendedor/dashboard" class="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-gray-800 transition">
+        <svg class="w-5 h-5 text-indigo-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M13 5v6h6" />
+        </svg>
+        <span>Inicio</span>
+      </a>
+
+      <a href="/vendedor/crear-venta-producto/vista" class="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-gray-800 transition">
+        <svg class="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+        </svg>
+        <span>Crear Venta</span>
+      </a>
+
+      <a href="/vendedor/historial-ventas" class="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-gray-800 transition">
+        <svg class="w-5 h-5 text-indigo-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2a4 4 0 014-4h4m0 0v6m0 0l-2-2m2 2l2-2" />
+        </svg>
+        <span>Mis Ventas</span>
+      </a>
+
+      <a href="/vendedor/crear-cliente" class="flex items-center gap-3 px-4 py-2 rounded-md bg-gray-800 transition">
+        <svg class="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+        </svg>
+        <span>Crear Cliente</span>
+      </a>
+
+      <a href="/vendedor/historial-clientes" class="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-gray-800 transition">
+        <svg class="w-5 h-5 text-indigo-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+        </svg>
+        <span>Historial Clientes</span>
+      </a>
+
+      <a href="/logout" class="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-red-600 bg-red-500 mt-auto">
+        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7" />
+        </svg>
+        <span>Cerrar sesión</span>
+      </a>
+    </nav>
+  </aside>
+
+  <!-- Contenido principal -->
+  <main class="flex-1 p-10">
+    <h1 class="text-4xl font-extrabold mb-8 text-gray-900">Crear Cliente</h1>
+
+    <form id="formCrearCliente" method="POST" action="/vendedor/crear-cliente"
+          class="bg-white p-8 rounded-2xl shadow-xl max-w-3xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
+
+      <!-- Nombre -->
+      <div class="flex flex-col">
+        <label for="nombre" class="mb-2 font-semibold text-gray-700">Nombre</label>
+        <input type="text" id="nombre" name="nombre" required
+               placeholder="Nombre"
+               class="p-3 rounded-lg border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-400 transition" />
+      </div>
+
+      <!-- Segundo Nombre -->
+      <div class="flex flex-col">
+        <label for="segundoNombre" class="mb-2 font-semibold text-gray-700">Segundo Nombre</label>
+        <input type="text" id="segundoNombre" name="segundoNombre"
+               placeholder="Segundo Nombre"
+               class="p-3 rounded-lg border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-400 transition" />
+      </div>
+
+      <!-- Apellido -->
+      <div class="flex flex-col">
+        <label for="apellido" class="mb-2 font-semibold text-gray-700">Apellido</label>
+        <input type="text" id="apellido" name="apellido" required
+               placeholder="Apellido"
+               class="p-3 rounded-lg border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-400 transition" />
+      </div>
+
+      <!-- Segundo Apellido -->
+      <div class="flex flex-col">
+        <label for="segundoApellido" class="mb-2 font-semibold text-gray-700">Segundo Apellido</label>
+        <input type="text" id="segundoApellido" name="segundoApellido"
+               placeholder="Segundo Apellido"
+               class="p-3 rounded-lg border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-400 transition" />
+      </div>
+
+      <!-- Email -->
+      <div class="flex flex-col col-span-1 md:col-span-2">
+        <label for="correoElectronico" class="mb-2 font-semibold text-gray-700">Email</label>
+        <input type="email" id="correoElectronico" name="correoElectronico" required
+               placeholder="correo@ejemplo.com"
+               class="w-full p-3 rounded-lg border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-400 transition" />
+      </div>
+
+      <!-- RUT -->
+      <div class="flex flex-col">
+        <label for="rut" class="mb-2 font-semibold text-gray-700">RUT</label>
+        <input type="text" id="rut" name="rut" required
+               placeholder="12345678-9"
+               class="p-3 rounded-lg border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-400 transition" />
+      </div>
+
+      <!-- Fecha Nacimiento -->
+      <div class="flex flex-col">
+        <label for="fechaNacimiento" class="mb-2 font-semibold text-gray-700">Fecha de Nacimiento</label>
+        <input type="date" id="fechaNacimiento" name="fechaNacimiento" required
+               class="p-3 rounded-lg border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-400 transition" />
+      </div>
+
+      <!-- Teléfono Móvil -->
+      <div class="flex flex-col">
+        <label for="telefonoMovil" class="mb-2 font-semibold text-gray-700">Teléfono Móvil</label>
+        <input type="tel" id="telefonoMovil" name="telefonoMovil" required
+               placeholder="+56 9 1234 5678"
+               class="p-3 rounded-lg border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-400 transition" />
+      </div>
+
+      <!-- Género -->
+      <div class="flex flex-col">
+        <label for="genero" class="mb-2 font-semibold text-gray-700">Género</label>
+        <select id="genero" name="genero" required
+                class="p-3 rounded-lg border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-400 transition">
+          <option value="" disabled selected>Seleccione un género</option>
+          <option value="Masculino">Masculino</option>
+          <option value="Femenino">Femenino</option>
+          <option value="Otro">Otro</option>
+          <option value="Prefiero no decir">Prefiero no decir</option>
+        </select>
+      </div>
+
+      <!-- Sede -->
+      <div class="flex flex-col">
+        <label for="sede" class="mb-2 font-semibold text-gray-700">Sede</label>
+        <select id="sede" name="sede" required
+                class="p-3 rounded-lg border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-400 transition">
+          <option value="" disabled selected>Seleccione una sede</option>
+          <option value="Nogales">Nogales</option>
+          <option value="Buin">Buin</option>
+          <option value="Colón">Colón</option>
+          <option value="El Bosque">El Bosque</option>
+          <option value="La Cisterna">La Cisterna</option>
+        </select>
+      </div>
+
+      <!-- Plan -->
+      <div class="flex flex-col">
+        <label for="planC" class="mb-2 font-semibold text-gray-700">Plan</label>
+        <select id="planC" name="planC" required
+                class="p-3 rounded-lg border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-400 transition">
+          <option value="" disabled selected>Seleccione un plan</option>
+          <option value="Programas SHARK Fast">Programas SHARK Fast</option>
+          <option value="Programa SHARK Elite">Programa SHARK Elite</option>
+          <option value="Prepago">Prepago</option>
+          <option value="Plan SHARK">Plan SHARK</option>
+          <option value="Plan Bronze">Plan Bronze</option>
+          <option value="Plan Silver">Plan Silver</option>
+          <option value="Plan Gold">Plan Gold</option>
+          <option value="Plan Shark Platinum">Plan Shark Platinum</option>
+          <option value="Plan SHARK MultiSede">Plan SHARK MultiSede</option>
+        </select>
+      </div>
+
+      <!-- Edad -->
+      <div class="flex flex-col">
+        <label for="edad" class="mb-2 font-semibold text-gray-700">Edad</label>
+        <input type="number" id="edad" name="edad" min="0" required
+               placeholder="Edad"
+               class="p-3 rounded-lg border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-400 transition" />
+      </div>
+
+      <!-- Dias Activos (oculto con valor por defecto 0) -->
+      <input type="hidden" id="diasActivos" name="diasActivos" value="0" />
+
+      <!-- Botón -->
+      <div class="col-span-1 md:col-span-2">
+        <button type="submit"
+                class="w-full bg-yellow-400 hover:bg-yellow-500 text-white font-extrabold py-4 rounded-xl shadow-lg transition">
+          Crear Cliente
+        </button>
+      </div>
+
+    </form>
+  </main>
+
+</body>
+</html>

@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Focos Débiles - Coordinador Comercial</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #e0e7ff, #f5f7fa);
+      color: #2c3e50;
+      min-height: 100vh;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    #loader {
+      border: 6px solid #f3f3f3;
+      border-top: 6px solid #4f6bed;
+      border-radius: 50%;
+      width: 48px;
+      height: 48px;
+      animation: spin 1s linear infinite;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      margin: -24px 0 0 -24px;
+      display: none;
+      z-index: 1000;
+    }
+
+    #errorToast {
+      position: fixed;
+      bottom: 1rem;
+      right: 1rem;
+      background: #e74c3c;
+      color: white;
+      padding: 1rem 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      font-weight: 700;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      z-index: 1100;
+    }
+
+    #errorToast.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* Título con animación y estilo */
+    .title-container {
+      margin-top: 2rem;
+      margin-bottom: 2.5rem;
+      text-align: center;
+    }
+    h1.title {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: #4f6bed;
+      border-bottom: 4px solid #a3bffa;
+      display: inline-block;
+      padding-bottom: 0.3rem;
+      margin: 0 auto;
+      animation: fade-in 0.6s ease-out;
+    }
+    @keyframes fade-in {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+<body class="flex min-h-screen">
+
+  <!-- Botón hamburguesa móvil -->
+  <button id="btnSidebar" class="fixed top-4 left-4 z-30 p-2 bg-indigo-600 text-white rounded-md shadow md:hidden">
+    ☰
+  </button>
+
+  <!-- Sidebar -->
+  <aside id="sidebar" class="fixed md:static top-0 left-0 w-64 bg-gray-900 text-white flex flex-col px-6 py-8 min-h-screen z-20
+                           transform -translate-x-full md:translate-x-0 transition-transform duration-300 overflow-y-auto">
+    <div class="mb-10 flex items-center gap-3">
+      <img src="/assets/media/app/SharkFit.png" alt="SharkFit Logo" class="w-10 h-10 object-contain" />
+      <span class="text-xl font-bold text-white">SharkFit</span>
+    </div>
+
+    <nav class="flex flex-col gap-4">
+      <a href="/coordinador/dashboard" class="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-gray-800 transition">
+        <span>Dashboard</span>
+      </a>
+      <a href="/coordinador/crear" class="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-gray-800 transition">
+        <span>Crear Cliente</span>
+      </a>
+      <a href="/coordinador/comparar-vs-metas" class="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-gray-800 transition">
+        <span>Comparar vs Metas</span>
+      </a>
+      <a href="/coordinador/bajo-rendimiento" class="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-gray-800 transition">
+        <span>Bajo Rendimiento</span>
+      </a>
+      <a href="/coordinador/focos-debiles" class="flex items-center gap-3 px-4 py-2 rounded-md bg-gray-800">
+        <span>Focos Débiles</span>
+      </a>
+      <a href="/coordinador/diagnostico-problema" class="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-gray-800 transition">
+        <span>Diagnóstico Problema</span>
+      </a>
+      <a href="/coordinador/rendimiento-vendedores" class="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-gray-800 transition">
+        <span>Rendimiento Vendedores</span>
+      </a>
+      <a href="/logout" class="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-red-600 bg-red-500 mt-auto">
+        <span>Cerrar sesión</span>
+      </a>
+    </nav>
+
+    <button id="btnCerrarSidebar" class="md:hidden mt-6 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md transition">
+      ← Ocultar menú
+    </button>
+  </aside>
+
+  <!-- Contenido principal -->
+  <main class="flex-1 p-6 md:p-10 relative">
+    <div class="title-container">
+      <h1 class="title">📉 Sedes con Menor Captación de Clientes</h1>
+    </div>
+
+    <div id="loader"></div>
+    <div id="errorToast"></div>
+
+    <div class="overflow-x-auto">
+      <table id="tablaFocos" class="min-w-full bg-white rounded-xl shadow-md overflow-hidden">
+        <thead class="bg-indigo-100 text-gray-700 text-left">
+          <tr>
+            <th class="px-6 py-4">Sede</th>
+            <th class="px-6 py-4">Clientes Nuevos</th>
+          </tr>
+        </thead>
+        <tbody class="text-gray-800 text-sm divide-y divide-gray-200">
+          <!-- Resultados serán insertados aquí -->
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <script>
+    async function cargarFocos() {
+      const loader = document.getElementById('loader');
+      const toast = document.getElementById('errorToast');
+      const tbody = document.querySelector('#tablaFocos tbody');
+
+      loader.style.display = 'block';
+      toast.classList.remove('show');
+      toast.textContent = '';
+      tbody.innerHTML = '';
+
+      try {
+        const res = await fetch('/coordinador/api/focos-debiles');
+        if (!res.ok) throw new Error('Error al cargar focos');
+
+        const data = await res.json();
+
+        if (data.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="2" class="text-center px-6 py-4">No se encontraron datos</td></tr>';
+          return;
+        }
+
+        data.forEach(foco => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td class="px-6 py-4">${foco.Sede}</td>
+            <td class="px-6 py-4 font-bold text-red-600">${foco.nuevosClientes}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+
+      } catch (err) {
+        console.error(err);
+        toast.textContent = 'No se pudo obtener el reporte de focos débiles.';
+        toast.classList.add('show');
+      } finally {
+        loader.style.display = 'none';
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => cargarFocos());
+
+    // Sidebar
+    const btnSidebar = document.getElementById('btnSidebar');
+    const sidebar = document.getElementById('sidebar');
+    const btnCerrarSidebar = document.getElementById('btnCerrarSidebar');
+
+    btnSidebar?.addEventListener('click', () => {
+      sidebar.classList.remove('-translate-x-full');
+      btnSidebar.classList.add('hidden');
+    });
+
+    btnCerrarSidebar?.addEventListener('click', () => {
+      sidebar.classList.add('-translate-x-full');
+      btnSidebar.classList.remove('hidden');
+    });
+
+    sidebar?.addEventListener('click', (e) => {
+      if (window.innerWidth < 768 && e.target.tagName === 'A') {
+        sidebar.classList.add('-translate-x-full');
+        btnSidebar.classList.remove('hidden');
+      }
+    });
+  </script>
+</body>
+</html>

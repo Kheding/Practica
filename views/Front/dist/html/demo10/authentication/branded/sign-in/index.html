@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html class="h-full" data-kt-theme="true" data-kt-theme-mode="light" dir="ltr" lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>SharkFit - Iniciar Sesión</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <link rel="icon" type="image/png" href="/assets/media/app/SharkFit.png" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f9fafb;
+      color: #333;
+      height: 100vh;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem;
+    }
+
+    .kt-card {
+      background: white;
+      border-radius: 0.5rem;
+      box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+      max-width: 370px;
+      width: 100%;
+      padding: 2.5rem;
+      box-sizing: border-box;
+    }
+
+    h3 {
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      text-align: center;
+      color: #111827;
+    }
+
+    .logo-container {
+      display: flex;
+      justify-content: center;
+      margin-top: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .logo-container img {
+      height: 160px;
+      width: auto;
+    }
+
+    form > div {
+      margin-bottom: 1rem;
+    }
+
+    label {
+      display: block;
+      font-weight: 500;
+      margin-bottom: 0.25rem;
+      color: #374151;
+    }
+
+    input[type="email"],
+    input[type="password"],
+    input[type="text"] {
+      width: 100%;
+      padding: 0.5rem 0.75rem;
+      border: 1px solid #d1d5db;
+      border-radius: 0.375rem;
+      font-size: 1rem;
+      color: #111827;
+      background-color: white;
+      transition: border-color 0.2s;
+      box-sizing: border-box;
+      padding-right: 2.5rem;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+    }
+
+    .forgot-link {
+      font-size: 0.875rem;
+      color: #3b82f6;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .forgot-link:hover {
+      text-decoration: underline;
+    }
+
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.875rem;
+      color: #374151;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .kt-checkbox {
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+
+    button[type="submit"] {
+      width: 100%;
+      background-color: #3b82f6;
+      color: white;
+      font-weight: 600;
+      padding: 0.75rem;
+      border: none;
+      border-radius: 0.375rem;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background-color 0.2s;
+    }
+
+    button[type="submit"]:hover {
+      background-color: #2563eb;
+    }
+
+    .kt-input {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .kt-input button {
+      position: absolute;
+      right: 0.75rem;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      font-size: 1.2rem;
+      color: #6b7280;
+    }
+
+    .kt-input button span {
+      line-height: 1;
+      font-size: 1.2rem;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="kt-card" role="main" aria-label="Sign in form">
+    <form id="sign_in_form" action="/login" method="post" class="kt-card-content flex flex-col gap-5" novalidate>
+      
+
+      <!-- Logo debajo del título -->
+      <div class="logo-container">
+        <img src="/assets/media/app/sharkfit2.jpg" alt="Logo SharkFit">
+      </div>
+
+      <!-- Email -->
+      <div>
+        <label for="email_personal">Correo electrónico</label>
+        <input id="email_personal" name="email_personal" type="email" placeholder="Ingresa tu correo" required autocomplete="username" />
+      </div>
+
+      <!-- Password -->
+      <div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
+          <label for="clave">Contraseña</label>
+        </div>
+        <div class="kt-input" data-kt-toggle-password="true">
+          <input id="clave" name="clave" type="password" placeholder="Ingresa tu contraseña" required autocomplete="current-password" />
+          <button type="button" data-kt-toggle-password-trigger="true" aria-label="Mostrar u ocultar contraseña">
+            <span data-kt-toggle-password-active-hidden>👁️</span>
+            <span class="hidden" data-kt-toggle-password-active-show>🙈</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Remember me -->
+      <label class="checkbox-label" for="remember_me">
+        <input id="remember_me" class="kt-checkbox" type="checkbox" name="check" value="1" />
+        Recuérdame
+      </label>
+
+      <!-- Submit -->
+      <button type="submit">Iniciar sesión</button>
+    </form>
+  </div>
+
+  <script>
+    // Mostrar/ocultar contraseña
+    document.querySelector('[data-kt-toggle-password-trigger]').addEventListener('click', function () {
+      const input = document.querySelector('input[name="clave"]');
+      const showIcon = this.querySelector('[data-kt-toggle-password-active-show]');
+      const hideIcon = this.querySelector('[data-kt-toggle-password-active-hidden]');
+      if (input.type === 'password') {
+        input.type = 'text';
+        showIcon.classList.remove('hidden');
+        hideIcon.classList.add('hidden');
+      } else {
+        input.type = 'password';
+        showIcon.classList.add('hidden');
+        hideIcon.classList.remove('hidden');
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Agendar Clase - Staff</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+</head>
+
+<body class="container py-4">
+  <h2 class="mb-4">Agendar Clase</h2>
+
+  <form id="agendarForm" method="POST" action="/staff/agendarFecha">
+    <div class="mb-3">
+      <label for="fecha" class="form-label">Fecha y Hora</label>
+      <input type="datetime-local" id="fecha" name="fecha" class="form-control" required />
+    </div>
+
+    <div class="mb-3">
+      <label for="descripcion" class="form-label">Descripción</label>
+      <input type="text" id="descripcion" name="descripcion" class="form-control" placeholder="Descripción de la clase" />
+    </div>
+
+    <div class="mb-3">
+      <label for="clientesSelect" class="form-label">Seleccionar Clientes</label>
+      <select id="clientesSelect" name="clientes" class="form-select" multiple size="8" required></select>
+      <small class="form-text text-muted">Mantén presionada la tecla Ctrl (Cmd en Mac) para seleccionar múltiples clientes.</small>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Agendar Clase</button>
+    <a href="/staff/verAgenda" class="btn btn-secondary ms-2">Volver a la Agenda</a>
+  </form>
+
+  <script>
+    async function cargarClientes() {
+      try {
+        const res = await fetch('/staff/apiListarClientes');
+        if (!res.ok) throw new Error('Error al cargar clientes');
+        const clientes = await res.json();
+
+        const select = document.getElementById('clientesSelect');
+        select.innerHTML = '';
+
+        clientes.forEach(cliente => {
+          const option = document.createElement('option');
+          option.value = cliente.IdCliente;
+          option.textContent = `${cliente.Nombre} ${cliente.Apellido} - ${cliente.Sede}`;
+          select.appendChild(option);
+        });
+      } catch (error) {
+        console.error(error);
+        alert('No se pudieron cargar los clientes');
+      }
+    }
+
+    cargarClientes();
+
+    // Para enviar múltiples clientes en el form con name="clientes" como array
+    document.getElementById('agendarForm').addEventListener('submit', function (e) {
+      const selectedOptions = Array.from(document.getElementById('clientesSelect').selectedOptions);
+      selectedOptions.forEach(option => {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'clientes[]';
+        input.value = option.value;
+        this.appendChild(input);
+      });
+    });
+  </script>
+</body>
+
+</html>

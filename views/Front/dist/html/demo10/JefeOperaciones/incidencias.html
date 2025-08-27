@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Incidencias</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+</head>
+
+<body class="bg-light">
+  <div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2 class="fw-bold">Incidencias</h2>
+      <a href="/jo/dashboard" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left-circle me-1"></i> Volver al Panel
+      </a>
+    </div>
+
+    <table class="table table-striped table-hover shadow-sm">
+      <thead class="table-dark">
+        <tr>
+          <th>ID</th>
+          <th>Empleado</th>
+          <th>Motivo</th>
+          <th>Fecha Inicio</th>
+          <th>Fecha Fin</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="tabla-incidencias">
+        <!-- Filas cargadas dinámicamente -->
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    async function cargarIncidencias() {
+      try {
+        const res = await fetch('/jo/incidencias/listar');
+        if (!res.ok) throw new Error('Error al obtener incidencias');
+        const incidencias = await res.json();
+        const tbody = document.getElementById('tabla-incidencias');
+        tbody.innerHTML = '';
+
+        if (incidencias.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="7" class="text-center">No hay incidencias registradas</td></tr>`;
+          return;
+        }
+
+        incidencias.forEach(inc => {
+          const tr = document.createElement('tr');
+
+          const estadoTexto = inc.estado === 0 ? 'Pendiente' : 'Completado';
+
+          tr.innerHTML = `
+            <td>${inc.id}</td>
+            <td>${inc.nombre_completo || 'Desconocido'}</td>
+            <td>${inc.motivo}</td>
+            <td>${new Date(inc.fechaInicio).toLocaleDateString()}</td>
+            <td>${inc.fechaFin ? new Date(inc.fechaFin).toLocaleDateString() : '-'}</td>
+            <td>
+              <select class="form-select form-select-sm" data-id="${inc.id}" onchange="actualizarEstado(this)">
+                <option value="0" ${inc.estado === 0 ? 'selected' : ''}>Pendiente</option>
+                <option value="1" ${inc.estado === 1 ? 'selected' : ''}>Completado</option>
+              </select>
+            </td>
+            <td>
+              <i class="bi bi-check-circle text-success" title="Actualizable en línea"></i>
+            </td>
+          `;
+
+          tbody.appendChild(tr);
+        });
+      } catch (error) {
+        alert('Error al cargar incidencias: ' + error.message);
+      }
+    }
+
+    async function actualizarEstado(select) {
+      const idIncidencia = select.getAttribute('data-id');
+      const nuevoEstado = parseInt(select.value);
+
+      try {
+        const res = await fetch('/jo/incidencias/actualizar', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ idIncidencia, estado: nuevoEstado })
+        });
+
+        const data = await res.json();
+        if (!data.exito) throw new Error('Error al actualizar el estado');
+
+        // Opcional: alerta o notificación
+        console.log(`Incidencia ${idIncidencia} actualizada a estado ${nuevoEstado}`);
+      } catch (error) {
+        alert('Error al actualizar estado: ' + error.message);
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', cargarIncidencias);
+  </script>
+</body>
+
+</html>

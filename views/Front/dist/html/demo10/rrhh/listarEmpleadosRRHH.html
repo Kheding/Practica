@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Staff - Empleados</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        .hidden-col {
+            display: none;
+        }
+
+        .pagination .page-link {
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body class="bg-light">
+    <div class="container mt-5">
+        <h2 class="mb-4 text-center">👥 Staff - Empleados</h2>
+
+        <!-- Buscador -->
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <input type="text" id="buscador" class="form-control"
+                    placeholder="Buscar por nombre, email, RUT o teléfono">
+            </div>
+            <div class="col-md-6 text-end">
+                <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        Filtrar columnas
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><label class="dropdown-item"><input type="checkbox" class="col-toggle" data-col="direccion"
+                                    checked> Dirección</label></li>
+                        <li><label class="dropdown-item"><input type="checkbox" class="col-toggle" data-col="emergencia"
+                                    checked> Emergencia</label></li>
+                        <li><label class="dropdown-item"><input type="checkbox" class="col-toggle" data-col="medico"
+                                    checked> Salud</label></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabla -->
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover" id="tablaEmpleados">
+                <thead class="table-dark text-center">
+                    <tr>
+                        <th>Nombre</th>
+                        <th>RUT</th>
+                        <th>Email</th>
+                        <th>Fono</th>
+                        <th class="direccion">Dirección</th>
+                        <th class="emergencia">Emergencia</th>
+                        <th class="medico">Salud</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tbodyEmpleados"></tbody>
+            </table>
+        </div>
+
+        <!-- Paginación -->
+        <nav>
+            <ul class="pagination justify-content-center" id="paginacion"></ul>
+        </nav>
+
+        <!-- Volver -->
+        <div class="text-center mt-4">
+            <a href="/rrhh/dashboard" class="btn btn-outline-primary">🔙 Volver al Dashboard</a>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const tbody = document.getElementById('tbodyEmpleados');
+            const buscador = document.getElementById('buscador');
+            const paginacion = document.getElementById('paginacion');
+
+            let empleados = [];
+            const filasPorPagina = 5;
+            let paginaActual = 1;
+
+            try {
+                const res = await fetch('/rrhh/administrativos');
+                const data = await res.json();
+                empleados = data;
+                renderTabla(empleados, paginaActual);
+                renderPaginacion(empleados);
+            } catch (err) {
+                console.error('Error al cargar empleados:', err);
+            }
+
+            function renderTabla(data, pagina) {
+                tbody.innerHTML = '';
+                const inicio = (pagina - 1) * filasPorPagina;
+                const paginados = data.slice(inicio, inicio + filasPorPagina);
+
+                paginados.forEach(emp => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${emp.nombre_completo}</td>
+                        <td>${emp.rut}</td>
+                        <td>${emp.email_personal}</td>
+                        <td>${emp.fono_contacto}</td>
+                        <td class="direccion">${emp.direccion || ''}</td>
+                        <td class="emergencia">${emp.contacto_emergencia} (${emp.relacion}) - ${emp.fono_emergencia}</td>
+                        <td class="medico">Enfermedades: ${emp.enfermedades || 'N/A'}<br>Alergias: ${emp.alergias || 'N/A'}</td>
+                        <td class="text-center">
+                           
+                            <button class="btn btn-sm btn-danger" onclick="eliminarEmpleado(${emp.id})">Eliminar</button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }
+
+            function renderPaginacion(data) {
+                paginacion.innerHTML = '';
+                const totalPaginas = Math.ceil(data.length / filasPorPagina);
+
+                for (let i = 1; i <= totalPaginas; i++) {
+                    const li = document.createElement('li');
+                    li.className = `page-item ${i === paginaActual ? 'active' : ''}`;
+                    li.innerHTML = `<a class="page-link">${i}</a>`;
+                    li.addEventListener('click', () => {
+                        paginaActual = i;
+                        renderTabla(empleadosFiltrados(), paginaActual);
+                        renderPaginacion(empleadosFiltrados());
+                    });
+                    paginacion.appendChild(li);
+                }
+            }
+
+            function empleadosFiltrados() {
+                const filtro = buscador.value.toLowerCase();
+                return empleados.filter(emp =>
+                    emp.nombre_completo?.toLowerCase().includes(filtro) ||
+                    emp.email_personal?.toLowerCase().includes(filtro) ||
+                    emp.rut?.toLowerCase().includes(filtro) ||
+                    emp.fono_contacto?.toLowerCase().includes(filtro)
+                );
+            }
+
+            buscador.addEventListener('input', () => {
+                paginaActual = 1;
+                renderTabla(empleadosFiltrados(), paginaActual);
+                renderPaginacion(empleadosFiltrados());
+            });
+
+            document.querySelectorAll('.col-toggle').forEach(chk => {
+                chk.addEventListener('change', (e) => {
+                    const clase = e.target.dataset.col;
+                    document.querySelectorAll(`.${clase}`).forEach(col => {
+                        col.classList.toggle('hidden-col', !e.target.checked);
+                    });
+                });
+            });
+        });
+
+    
+        function eliminarEmpleado(id) {
+            if (confirm('¿Estás seguro de eliminar este empleado?')) {
+                window.location.href = `/rrhh/eliminarEmpleado/${id}`;
+            }
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

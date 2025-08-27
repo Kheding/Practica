@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Crear Cliente - Coordinador Comercial</title>
+  <link rel="icon" href="/assets/media/app/SharkFit.png" type="image/png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+
+    form:hover {
+      box-shadow: 0 16px 30px rgb(79 107 237 / 0.3);
+    }
+
+    /* Estilos para el título con efecto animado */
+    .title-container {
+      margin-top: 2rem;
+      margin-bottom: 2.5rem;
+      text-align: center;
+    }
+    h1.title {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: #4f6bed;
+      border-bottom: 4px solid #a3bffa;
+      display: inline-block;
+      padding-bottom: 0.3rem;
+      margin: 0 auto;
+      animation: fade-in 0.6s ease-out;
+    }
+    @keyframes fade-in {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    #loader {
+      border: 6px solid #f3f3f3;
+      border-top: 6px solid #4f6bed;
+      border-radius: 50%;
+      width: 48px;
+      height: 48px;
+      animation: spin 1s linear infinite;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      margin: -24px 0 0 -24px;
+      display: none;
+      z-index: 1000;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    #errorToast {
+      position: fixed;
+      bottom: 1rem;
+      right: 1rem;
+      background: #e74c3c;
+      color: white;
+      padding: 1rem 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      font-weight: 700;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      z-index: 1100;
+    }
+
+    #errorToast.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* Ajuste tamaño título en móvil */
+    @media (max-width: 600px) {
+      h1.title {
+        font-size: 1.75rem;
+      }
+    }
+  </style>
+</head>
+
+<body class="bg-gray-100 flex min-h-screen">
+
+  <!-- Botón hamburguesa móvil -->
+  <button id="btnSidebar" class="fixed top-4 left-4 z-30 p-2 bg-indigo-600 text-white rounded-md shadow md:hidden">
+    ☰
+  </button>
+
+  <!-- Sidebar -->
+  <aside id="sidebar" class="fixed md:static top-0 left-0 w-64 bg-gray-900 text-white flex flex-col px-6 py-8 min-h-screen z-20
+                             transform -translate-x-full md:translate-x-0 transition-transform duration-300 overflow-y-auto">
+    <div class="mb-10 flex items-center gap-3">
+      <img src="/assets/media/app/SharkFit.png" alt="SharkFit Logo" class="w-10 h-10 object-contain" />
+      <span class="text-xl font-bold text-white">SharkFit</span>
+    </div>
+
+    <nav class="flex flex-col gap-4">
+      <a href="/coordinador/dashboard" class="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-gray-800 transition">
+        <span>Dashboard</span>
+      </a>
+      <a href="/coordinador/crear" class="flex items-center gap-3 px-4 py-2 rounded-md bg-gray-800 transition">
+        <span>Crear Cliente</span>
+      </a>
+      <a href="/coordinador/comparar-vs-metas" class="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-gray-800 transition">
+        <span>Comparar vs Metas</span>
+      </a>
+      <a href="/coordinador/bajo-rendimiento" class="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-gray-800 transition">
+        <span>Bajo Rendimiento</span>
+      </a>
+      <a href="/coordinador/focos-debiles" class="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-gray-800 transition">
+        <span>Focos Débiles</span>
+      </a>
+      <a href="/coordinador/diagnostico-problema" class="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-gray-800 transition">
+        <span>Diagnóstico Problema</span>
+      </a>
+      <a href="/coordinador/rendimiento-vendedores" class="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-gray-800 transition">
+        <span>Rendimiento Vendedores</span>
+      </a>
+      <a href="/logout" class="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-red-600 bg-red-500 mt-auto">
+        <span>Cerrar sesión</span>
+      </a>
+    </nav>
+
+    <button id="btnCerrarSidebar" class="md:hidden mt-6 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md transition">
+      ← Ocultar menú
+    </button>
+  </aside>
+
+  <!-- Contenido principal -->
+  <main class="flex-1 p-6 md:p-10">
+    <div class="title-container">
+      <h1 class="title">Crear Nuevo Cliente</h1>
+    </div>
+
+    <form action="/coordinador/crearCliente" method="POST" autocomplete="off" id="formCrearCliente"
+          class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white rounded-xl p-6 md:p-8 shadow-md max-w-4xl mx-auto">
+      <!-- Campos aquí -->
+      <label for="Nombre">Nombre</label>
+      <input type="text" id="Nombre" name="Nombre" required class="border border-gray-300 rounded-md px-3 py-2" />
+
+      <label for="SegundoNombre">Segundo Nombre</label>
+      <input type="text" id="SegundoNombre" name="SegundoNombre" class="border border-gray-300 rounded-md px-3 py-2" />
+
+      <label for="Apellido">Apellido</label>
+      <input type="text" id="Apellido" name="Apellido" required class="border border-gray-300 rounded-md px-3 py-2" />
+
+      <label for="SegundoApellido">Segundo Apellido</label>
+      <input type="text" id="SegundoApellido" name="SegundoApellido" class="border border-gray-300 rounded-md px-3 py-2" />
+
+      <label for="PlanC">Plan Comercial</label>
+      <input type="text" id="PlanC" name="PlanC" required class="border border-gray-300 rounded-md px-3 py-2" />
+
+      <label for="FechaRegistro">Fecha de Registro</label>
+      <input type="date" id="FechaRegistro" name="FechaRegistro" required class="border border-gray-300 rounded-md px-3 py-2" />
+
+      <label for="Conversion">Fecha Conversión</label>
+      <input type="date" id="Conversion" name="Conversion" class="border border-gray-300 rounded-md px-3 py-2" />
+
+      <label for="VencimientoPlan">Vencimiento del Plan</label>
+      <input type="date" id="VencimientoPlan" name="VencimientoPlan" class="border border-gray-300 rounded-md px-3 py-2" />
+
+      <label for="Sede">Sede</label>
+      <input type="text" id="Sede" name="Sede" required class="border border-gray-300 rounded-md px-3 py-2" />
+
+      <label for="PlanFirmado">Plan Firmado</label>
+      <select id="PlanFirmado" name="PlanFirmado" required class="border border-gray-300 rounded-md px-3 py-2">
+        <option value="">Seleccione</option>
+        <option value="Sí">Sí</option>
+        <option value="No">No</option>
+      </select>
+
+      <label for="RUT">RUT</label>
+      <input type="text" id="RUT" name="RUT" required pattern="\d{7,8}-[\dkK]" title="Formato RUT: 12345678-9" class="border border-gray-300 rounded-md px-3 py-2" />
+
+      <label for="FechaNacimiento">Fecha de Nacimiento</label>
+      <input type="date" id="FechaNacimiento" name="FechaNacimiento" required class="border border-gray-300 rounded-md px-3 py-2" />
+
+      <label for="DiasActivos">Días Activos</label>
+      <input type="number" id="DiasActivos" name="DiasActivos" min="0" required class="border border-gray-300 rounded-md px-3 py-2" />
+
+      <label for="CorreoElectronico">Correo Electrónico</label>
+      <input type="email" id="CorreoElectronico" name="CorreoElectronico" required class="border border-gray-300 rounded-md px-3 py-2" />
+
+      <label for="Genero">Género</label>
+      <select id="Genero" name="Genero" required class="border border-gray-300 rounded-md px-3 py-2">
+        <option value="">Seleccione</option>
+        <option value="Masculino">Masculino</option>
+        <option value="Femenino">Femenino</option>
+        <option value="Otro">Otro</option>
+      </select>
+
+      <label for="Edad">Edad</label>
+      <input type="number" id="Edad" name="Edad" min="0" required class="border border-gray-300 rounded-md px-3 py-2" />
+
+      <label for="TelefonoMovil">Teléfono Móvil</label>
+      <input type="tel" id="TelefonoMovil" name="TelefonoMovil" pattern="[0-9]{9,15}" title="Solo números, mínimo 9 dígitos" class="border border-gray-300 rounded-md px-3 py-2" />
+
+      <label for="UltimaPresencia">Última Presencia</label>
+      <input type="date" id="UltimaPresencia" name="UltimaPresencia" class="border border-gray-300 rounded-md px-3 py-2" />
+
+      <label for="ValorPlan">Valor Plan</label>
+      <input type="number" step="0.01" id="ValorPlan" name="ValorPlan" min="0" required class="border border-gray-300 rounded-md px-3 py-2" />
+
+      <button type="submit" class="col-span-1 md:col-span-2 bg-indigo-600 text-white font-bold py-3 rounded-md hover:bg-indigo-700 transition">
+        Crear Cliente
+      </button>
+    </form>
+
+    <div id="loader"></div>
+    <div id="errorToast"></div>
+  </main>
+
+  <!-- Script lógica -->
+  <script>
+    const fechaNacimientoInput = document.getElementById('FechaNacimiento');
+    const edadInput = document.getElementById('Edad');
+
+    fechaNacimientoInput.addEventListener('change', () => {
+      const fechaNacimiento = new Date(fechaNacimientoInput.value);
+      if (!isNaN(fechaNacimiento)) {
+        const hoy = new Date();
+        let edad = hoy.getFullYear() - fechaNacimiento.getFullYear();
+        const m = hoy.getMonth() - fechaNacimiento.getMonth();
+        if (m < 0 || (m === 0 && hoy.getDate() < fechaNacimiento.getDate())) edad--;
+        edadInput.value = edad >= 0 ? edad : '';
+      } else {
+        edadInput.value = '';
+      }
+    });
+
+    // Mostrar/Cerrar loader
+    const form = document.getElementById('formCrearCliente');
+    const loader = document.getElementById('loader');
+    const errorToast = document.getElementById('errorToast');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      loader.style.display = 'block';
+      errorToast.classList.remove('show');
+      errorToast.textContent = '';
+
+      try {
+        await new Promise(r => setTimeout(r, 1500)); // Simulación
+        loader.style.display = 'none';
+        alert('Cliente creado exitosamente');
+        form.reset();
+      } catch (err) {
+        loader.style.display = 'none';
+        errorToast.textContent = 'Error al crear cliente: ' + (err.message || err);
+        errorToast.classList.add('show');
+      }
+    });
+
+    // Sidebar lógica
+    const btnSidebar = document.getElementById('btnSidebar');
+    const sidebar = document.getElementById('sidebar');
+    const btnCerrarSidebar = document.getElementById('btnCerrarSidebar');
+
+    btnSidebar?.addEventListener('click', () => {
+      sidebar.classList.remove('-translate-x-full');
+      btnSidebar.classList.add('hidden');
+    });
+
+    btnCerrarSidebar?.addEventListener('click', () => {
+      sidebar.classList.add('-translate-x-full');
+      btnSidebar.classList.remove('hidden');
+    });
+
+    sidebar?.addEventListener('click', (e) => {
+      if (window.innerWidth < 768 && e.target.tagName === 'A') {
+        sidebar.classList.add('-translate-x-full');
+        btnSidebar.classList.remove('hidden');
+      }
+    });
+  </script>
+</body>
+</html>

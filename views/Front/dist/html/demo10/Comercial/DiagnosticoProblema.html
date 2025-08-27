@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Diagnóstico de Problema - Coordinador Comercial</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #e0e7ff, #f5f7fa);
+      color: #2c3e50;
+      min-height: 100vh;
+    }
+
+    section {
+      margin-bottom: 3rem;
+    }
+
+    h2 {
+      font-size: 1.4rem;
+      color: #2c3e50;
+      margin-bottom: 1rem;
+      border-left: 4px solid #4f6bed;
+      padding-left: 0.5rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 6px 14px rgb(0 0 0 / 0.08);
+    }
+
+    th, td {
+      padding: 1rem;
+      text-align: left;
+      border-bottom: 1px solid #eef1f6;
+      font-size: 0.95rem;
+    }
+
+    th {
+      background-color: #f0f4ff;
+      color: #2c3e50;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    .low {
+      color: #e74c3c;
+      font-weight: 700;
+    }
+
+    #errorToast {
+      position: fixed;
+      bottom: 1rem;
+      right: 1rem;
+      background: #e74c3c;
+      color: white;
+      padding: 1rem 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      font-weight: 700;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      z-index: 1000;
+    }
+
+    #errorToast.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    @keyframes fade-in {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .animate-fade-in {
+      animation: fade-in 0.6s ease-out;
+    }
+  </style>
+</head>
+<body class="flex min-h-screen">
+
+  <!-- Botón hamburguesa móvil -->
+  <button id="btnSidebar" class="fixed top-4 left-4 z-30 p-2 bg-indigo-600 text-white rounded-md shadow md:hidden">
+    ☰
+  </button>
+
+  <!-- Sidebar -->
+  <aside id="sidebar" class="fixed md:static top-0 left-0 w-64 bg-gray-900 text-white flex flex-col px-6 py-8 min-h-screen z-20
+                             transform -translate-x-full md:translate-x-0 transition-transform duration-300 overflow-y-auto">
+    <div class="mb-10 flex items-center gap-3">
+      <img src="/assets/media/app/SharkFit.png" alt="SharkFit Logo" class="w-10 h-10 object-contain" />
+      <span class="text-xl font-bold text-white">SharkFit</span>
+    </div>
+
+    <nav class="flex flex-col gap-4">
+      <a href="/coordinador/dashboard" class="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-gray-800 transition">
+        <span>Dashboard</span>
+      </a>
+      <a href="/coordinador/crear" class="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-gray-800 transition">
+        <span>Crear Cliente</span>
+      </a>
+      <a href="/coordinador/comparar-vs-metas" class="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-gray-800 transition">
+        <span>Comparar vs Metas</span>
+      </a>
+      <a href="/coordinador/bajo-rendimiento" class="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-gray-800 transition">
+        <span>Bajo Rendimiento</span>
+      </a>
+      <a href="/coordinador/focos-debiles" class="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-gray-800 transition">
+        <span>Focos Débiles</span>
+      </a>
+      <a href="/coordinador/diagnostico-problema" class="flex items-center gap-3 px-4 py-2 rounded-md bg-gray-800">
+        <span>Diagnóstico Problema</span>
+      </a>
+      <a href="/coordinador/rendimiento-vendedores" class="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-gray-800 transition">
+        <span>Rendimiento Vendedores</span>
+      </a>
+      <a href="/logout" class="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-red-600 bg-red-500 mt-auto">
+        <span>Cerrar sesión</span>
+      </a>
+    </nav>
+
+    <button id="btnCerrarSidebar" class="md:hidden mt-6 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md transition">
+      ← Ocultar menú
+    </button>
+  </aside>
+
+  <!-- Contenido principal -->
+  <main class="flex-1 p-6 md:p-10 relative">
+    <!-- TÍTULO MEJORADO -->
+    <div class="mb-10 text-center">
+      <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-indigo-700 tracking-wide animate-fade-in border-b-4 border-indigo-300 inline-block pb-2">
+        Diagnóstico de Problemas de Gestión
+      </h1>
+    </div>
+
+    <section>
+      <h2>Empleados con Baja Asistencia</h2>
+      <table id="tablaAsistencia">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nombre Completo</th>
+            <th>Asistencias en el Mes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Asistencia se carga aquí -->
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>Empleados con Pocas Solicitudes Gestionadas</h2>
+      <table id="tablaSolicitudes">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nombre Completo</th>
+            <th>Solicitudes del Mes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Solicitudes se cargan aquí -->
+        </tbody>
+      </table>
+    </section>
+
+    <div id="errorToast"></div>
+  </main>
+
+  <script>
+    async function cargarDiagnostico() {
+      const toast = document.getElementById('errorToast');
+      const tbodyAsis = document.querySelector('#tablaAsistencia tbody');
+      const tbodySol = document.querySelector('#tablaSolicitudes tbody');
+
+      try {
+        const res = await fetch('/coordinador/api/diagnostico-problema');
+        if (!res.ok) throw new Error('Error al cargar diagnóstico');
+
+        const data = await res.json();
+
+        tbodyAsis.innerHTML = data.bajaAsistencia.length
+          ? data.bajaAsistencia.map(emp => `
+            <tr>
+              <td>${emp.id}</td>
+              <td>${emp.nombre_completo}</td>
+              <td class="low">${emp.asistenciasMes}</td>
+            </tr>
+          `).join('')
+          : '<tr><td colspan="3" style="text-align:center;">Sin datos</td></tr>';
+
+        tbodySol.innerHTML = data.pocasSolicitudes.length
+          ? data.pocasSolicitudes.map(emp => `
+            <tr>
+              <td>${emp.id}</td>
+              <td>${emp.nombre_completo}</td>
+              <td class="low">${emp.solicitudesMes}</td>
+            </tr>
+          `).join('')
+          : '<tr><td colspan="3" style="text-align:center;">Sin datos</td></tr>';
+
+      } catch (err) {
+        console.error(err);
+        toast.textContent = 'No se pudo cargar el diagnóstico.';
+        toast.classList.add('show');
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', cargarDiagnostico);
+
+    // Sidebar lógica
+    const btnSidebar = document.getElementById('btnSidebar');
+    const sidebar = document.getElementById('sidebar');
+    const btnCerrarSidebar = document.getElementById('btnCerrarSidebar');
+
+    btnSidebar?.addEventListener('click', () => {
+      sidebar.classList.remove('-translate-x-full');
+      btnSidebar.classList.add('hidden');
+    });
+
+    btnCerrarSidebar?.addEventListener('click', () => {
+      sidebar.classList.add('-translate-x-full');
+      btnSidebar.classList.remove('hidden');
+    });
+
+    sidebar?.addEventListener('click', (e) => {
+      if (window.innerWidth < 768 && e.target.tagName === 'A') {
+        sidebar.classList.add('-translate-x-full');
+        btnSidebar.classList.remove('hidden');
+      }
+    });
+  </script>
+</body>
+</html>

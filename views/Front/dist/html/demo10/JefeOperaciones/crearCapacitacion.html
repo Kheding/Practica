@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Crear Capacitación</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+<div class="container py-5">
+    <h2 class="mb-4">Crear Nueva Capacitación</h2>
+    <form id="formCrearCapacitacion">
+        <div class="mb-3">
+            <label for="titulo" class="form-label">Título de la Capacitación</label>
+            <input type="text" id="titulo" name="titulo" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label for="fecha" class="form-label">Fecha</label>
+            <input type="datetime-local" id="fecha" name="fecha" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label for="responsables" class="form-label">Responsables de Sede (opcional)</label>
+            <select id="responsables" name="responsables[]" class="form-select" multiple></select>
+            <div class="form-text">Si se deja vacío, la capacitación será general.</div>
+        </div>
+        <button type="submit" class="btn btn-success">Crear Capacitación</button>
+        <a href="/jo/capacitaciones" class="btn btn-secondary ms-2">Volver a Capacitaciones</a>
+        <a href="/jo/dashboard" class="btn btn-secondary ms-2">Volver al Dashboard</a>
+    </form>
+</div>
+
+<script>
+    // Cargar responsables de sede
+    async function cargarResponsables() {
+        try {
+            const res = await fetch('/jo/api/responsables');
+            const data = await res.json();
+            const select = document.getElementById('responsables');
+            data.forEach(responsable => {
+                const option = document.createElement('option');
+                option.value = responsable.id;
+                option.textContent = responsable.nombre_completo;
+                select.appendChild(option);
+            });
+        } catch (error) {
+            alert('Error al cargar responsables.');
+        }
+    }
+
+    cargarResponsables();
+
+    // Envío del formulario
+    document.getElementById('formCrearCapacitacion').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const form = e.target;
+        const formData = new FormData(form);
+
+        const responsables = [...formData.getAll('responsables[]')];
+
+        const body = {
+            titulo: formData.get('titulo'),
+            fecha: formData.get('fecha'),
+            responsables: responsables
+        };
+
+        const res = await fetch('/jo/capacitaciones/crear', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+        });
+
+        if (res.ok) {
+            alert('Capacitación creada exitosamente.');
+            window.location.href = '/jefe-operaciones/capacitaciones';
+        } else {
+            const err = await res.json();
+            alert('Error: ' + err.error);
+        }
+    });
+</script>
+</body>
+</html>

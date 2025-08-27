@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Incidencias - Responsable de Sede</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts Inter -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(to bottom right, #f8fafc, #e2e8f0);
+    }
+
+    main.content {
+      margin-left: 0;
+      padding: 2rem 1rem;
+      transition: margin-left 0.3s ease;
+      min-height: 100vh;
+    }
+
+    @media (min-width: 768px) {
+      main.content {
+        margin-left: 16rem;
+        padding: 3rem 2rem;
+      }
+    }
+
+    /* Sidebar mobile button and overlay */
+    #btnSidebar {
+      position: fixed;
+      top: 1rem;
+      left: 1rem;
+      z-index: 40;
+      padding: 0.5rem;
+      background-color: #4f46e5;
+      color: white;
+      border-radius: 0.375rem;
+      box-shadow: 0 0 10px rgb(79 70 229 / 0.5);
+      cursor: pointer;
+    }
+
+    #overlay {
+      position: fixed;
+      inset: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 30;
+      display: none;
+    }
+  </style>
+</head>
+
+<body class="flex min-h-screen">
+
+  <!-- Botón hamburguesa para móvil -->
+  <button id="btnSidebar" class="md:hidden">☰</button>
+
+  <!-- Fondo oscuro para sidebar móvil -->
+  <div id="overlay" class="hidden md:hidden"></div>
+
+  <!-- Sidebar -->
+  <aside
+    id="sidebar"
+    class="fixed top-0 left-0 h-full w-64 max-w-full bg-gray-900 text-white flex flex-col px-6 py-8 z-40
+           -translate-y-full transition-transform duration-300 overflow-y-auto
+           md:static md:w-64 md:min-h-screen md:translate-y-0 md:transform-none"
+  >
+    <div class="mb-10 flex items-center gap-3">
+      <img src="/assets/media/app/SharkFit.png" alt="SharkFit Logo" class="w-10 h-10 object-contain" />
+      <span class="text-xl font-bold text-white">SharkFit</span>
+    </div>
+
+    <nav class="flex flex-col gap-4">
+      <a href="/rs/dashboard" class="flex items-center gap-3 px-4 py-2 rounded-md bg-gray-800">
+        <i class="bi bi-house-door-fill text-indigo-300 fs-5"></i>
+        <span>Inicio</span>
+      </a>
+
+      <a href="/rs/crear" class="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-gray-800 transition">
+        <i class="bi bi-person-plus text-yellow-400 fs-5"></i>
+        <span>Crear Cliente</span>
+      </a>
+
+      <a href="/rs/listar" class="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-gray-800 transition">
+        <i class="bi bi-card-list text-blue-300 fs-5"></i>
+        <span>Listar Clientes</span>
+      </a>
+
+      <a href="/rs/historialA" class="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-gray-800 transition">
+        <i class="bi bi-journal-text text-gray-300 fs-5"></i>
+        <span>Historial Asistencias</span>
+      </a>
+
+      <a href="/rs/reportesVentas" class="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-gray-800 transition">
+        <i class="bi bi-bar-chart text-yellow-500 fs-5"></i>
+        <span>Reportes de Ventas</span>
+      </a>
+
+      <a href="/rs/informeDiario" class="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-gray-800 transition">
+        <i class="bi bi-file-earmark-excel text-green-400 fs-5"></i>
+        <span>Informe Diario (Excel)</span>
+      </a>
+
+      <a href="/rs/informeSemanal" class="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-gray-800 transition">
+        <i class="bi bi-file-earmark-excel text-green-400 fs-5"></i>
+        <span>Informe Semanal (Excel)</span>
+      </a>
+
+      <a href="/rs/listarProyectos" class="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-gray-800 transition">
+        <i class="bi bi-folder text-gray-300 fs-5"></i>
+        <span>Ver Proyectos</span>
+      </a>
+
+      <a href="/rs/crearProyecto" class="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-gray-800 transition">
+        <i class="bi bi-plus-square text-gray-300 fs-5"></i>
+        <span>Crear Proyecto</span>
+      </a>
+
+      <a href="/rs/incidencias" class="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-gray-800 transition">
+        <i class="bi bi-exclamation-triangle text-red-500 fs-5"></i>
+        <span>Ver/Registrar Incidencia</span>
+      </a>
+
+      <a href="/rs/crearSolicitud" class="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-gray-800 transition">
+        <i class="bi bi-envelope text-blue-400 fs-5"></i>
+        <span>Crear Solicitud a RRHH</span>
+      </a>
+
+      <a href="/cuentas/perfil" class="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-gray-800 transition">
+        <i class="bi bi-person-circle text-blue-300 fs-5"></i>
+        <span>Editar mi perfil</span>
+      </a>
+
+      <a href="/rs/listarStaff" class="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-gray-800 transition">
+        <i class="bi bi-people text-green-400 fs-5"></i>
+        <span>Ver Staff</span>
+      </a>
+
+      <a href="/logout" class="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-red-600 bg-red-500 mt-auto">
+        <i class="bi bi-box-arrow-right text-white fs-5"></i>
+        <span>Cerrar sesión</span>
+      </a>
+    </nav>
+
+    <button
+      id="btnCerrarSidebar"
+      class="md:hidden mt-6 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md transition"
+    >
+      ← Ocultar menú
+    </button>
+  </aside>
+
+  <!-- Contenido principal -->
+  <main class="content flex-1 mt-16 md:mt-0 p-4 container bg-white rounded shadow">
+    <h2 class="mb-4">📋 Registro de Incidencias</h2>
+
+    <!-- Formulario para registrar nueva incidencia -->
+    <div class="card shadow-sm mb-5">
+      <div class="card-header bg-danger text-white">
+        <i class="bi bi-exclamation-triangle-fill"></i> Nueva Incidencia
+      </div>
+      <div class="card-body">
+        <form id="formIncidencia">
+          <div class="mb-3">
+            <label for="titulo" class="form-label">Título</label>
+            <input type="text" class="form-control" id="titulo" name="titulo" required />
+          </div>
+          <div class="mb-3">
+            <label for="descripcion" class="form-label">Descripción</label>
+            <textarea class="form-control" id="descripcion" name="descripcion" rows="3" required></textarea>
+          </div>
+          <div class="mb-3">
+            <label for="fecha" class="form-label">Fecha</label>
+            <input type="date" class="form-control" id="fecha" name="fecha" required />
+          </div>
+          <button type="submit" class="btn btn-danger w-100">
+            <i class="bi bi-plus-circle"></i> Registrar Incidencia
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Tabla de incidencias registradas -->
+    <div class="card shadow-sm">
+      <div class="card-header bg-secondary text-white">
+        <i class="bi bi-list-ul"></i> Incidencias Registradas
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-bordered table-hover">
+            <thead class="table-dark">
+              <tr>
+                <th>Fecha</th>
+                <th>Título</th>
+                <th>Descripción</th>
+              </tr>
+            </thead>
+            <tbody id="tablaIncidencias">
+              <tr>
+                <td colspan="3" class="text-center">Cargando incidencias...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Botón volver -->
+    <div class="text-end mt-3">
+      <a href="/rs/dashboard" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Volver al Dashboard
+      </a>
+    </div>
+  </main>
+
+  <script>
+    // Cargar incidencias al cargar la página
+    document.addEventListener("DOMContentLoaded", () => {
+      fetch('/rs/apiIncidencias')
+        .then(res => res.json())
+        .then(data => {
+          const tabla = document.getElementById("tablaIncidencias");
+          tabla.innerHTML = "";
+
+          if (data.length === 0) {
+            tabla.innerHTML = `<tr><td colspan="3" class="text-center">No hay incidencias registradas.</td></tr>`;
+            return;
+          }
+
+          data.forEach(inc => {
+            const fila = `
+              <tr>
+                <td>${new Date(inc.fecha).toLocaleDateString()}</td>
+                <td>${inc.titulo}</td>
+                <td>${inc.descripcion}</td>
+              </tr>`;
+            tabla.innerHTML += fila;
+          });
+        })
+        .catch(err => {
+          document.getElementById("tablaIncidencias").innerHTML =
+            `<tr><td colspan="3" class="text-center text-danger">Error al cargar incidencias.</td></tr>`;
+        });
+    });
+
+    // Enviar incidencia
+    document.getElementById("formIncidencia").addEventListener("submit", function (e) {
+      e.preventDefault();
+      const titulo = document.getElementById("titulo").value;
+      const descripcion = document.getElementById("descripcion").value;
+      const fecha = document.getElementById("fecha").value;
+
+      fetch('/rs/incidencias', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ titulo, descripcion, fecha })
+      })
+        .then(res => {
+          if (res.ok) {
+            alert("✅ Incidencia registrada correctamente");
+            this.reset();
+            location.reload();
+          } else {
+            alert("❌ Error al registrar la incidencia");
+          }
+        });
+    });
+  </script>
+
+  <script>
+    // Script para manejar sidebar responsive
+    document.addEventListener('DOMContentLoaded', () => {
+      const sidebar = document.getElementById('sidebar');
+      const btnSidebar = document.getElementById('btnSidebar');
+      const btnCerrarSidebar = document.getElementById('btnCerrarSidebar');
+      const overlay = document.getElementById('overlay');
+
+      function abrirSidebar() {
+        sidebar.classList.remove('-translate-y-full');
+        overlay.classList.remove('hidden');
+        btnSidebar.classList.add('hidden');
+        document.body.style.overflow = 'hidden'; // Bloquea scroll fondo
+      }
+
+      function cerrarSidebar() {
+        sidebar.classList.add('-translate-y-full');
+        overlay.classList.add('hidden');
+        btnSidebar.classList.remove('hidden');
+        document.body.style.overflow = ''; // Permite scroll fondo
+      }
+
+      btnSidebar.addEventListener('click', abrirSidebar);
+      btnCerrarSidebar?.addEventListener('click', cerrarSidebar);
+      overlay.addEventListener('click', cerrarSidebar);
+
+      sidebar.addEventListener('click', (e) => {
+        if (window.innerWidth < 768 && e.target.tagName === 'A') {
+          cerrarSidebar();
+        }
+      });
+    });
+  </script>
+
+</body>
+
+</html>

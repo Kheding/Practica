@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Listado de Clientes por Sede</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-light">
+  <div class="container py-4">
+    <h2 class="mb-4">Listado de Clientes por Sede</h2>
+
+    <!-- Filtro por sede -->
+    <div class="mb-3 row">
+      <div class="col-md-6">
+        <label for="sedeSelect" class="form-label">Seleccionar sede:</label>
+        <select id="sedeSelect" class="form-select">
+          <option value="">-- Seleccionar --</option>
+          <option value="NOGALES">NOGALES</option>
+          <option value="COLON">COLON</option>
+          <option value="EL BOSQUE">EL BOSQUE</option>
+          <option value="LA CISTERNA">LA CISTERNA</option>
+          <option value="BUIN">BUIN</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Checkbox filtro membresía activa -->
+    <div class="form-check mb-3">
+      <input class="form-check-input" type="checkbox" id="membresiaActivaCheckbox" checked>
+      <label class="form-check-label" for="membresiaActivaCheckbox">
+        Mostrar solo clientes con membresía activa
+      </label>
+    </div>
+
+    <!-- Barra de búsqueda -->
+    <div class="mb-3">
+      <input type="text" id="searchInput" class="form-control"
+        placeholder="Buscar por nombre, apellido, correo o teléfono...">
+    </div>
+
+    <!-- Tabla -->
+    <div class="table-responsive">
+      <table class="table table-bordered table-hover bg-white">
+        <thead class="table-dark">
+          <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>Correo</th>
+            <th>Teléfono</th>
+            <th>Sede</th>
+            <th>Membresía</th>
+          </tr>
+        </thead>
+        <tbody id="clientesTableBody"></tbody>
+      </table>
+    </div>
+
+    <!-- Navegación de páginas -->
+    <div id="paginacion" class="d-flex justify-content-center my-3 gap-2">
+      <button id="prevBtn" class="btn btn-outline-primary btn-sm">Anterior</button>
+      <span id="pageInfo" class="align-self-center"></span>
+      <button id="nextBtn" class="btn btn-outline-primary btn-sm">Siguiente</button>
+    </div>
+
+    <!-- Botón volver -->
+    <a href="/rrhh/dashboard" class="btn btn-secondary mt-3">Volver al Dashboard</a>
+  </div>
+
+  <script>
+    let clientesData = [];
+    let clientesFiltrados = [];
+    let currentPage = 1;
+    const clientesPorPagina = 10;
+
+    document.getElementById('sedeSelect').addEventListener('change', async (e) => {
+      const sede = e.target.value;
+      if (!sede) {
+        document.getElementById('clientesTableBody').innerHTML = '';
+        return;
+      }
+
+      try {
+        const response = await fetch(`/rrhh/clientes/${sede}`);
+        if (!response.ok) throw new Error('Error al cargar clientes');
+        clientesData = await response.json();
+        aplicarFiltros();
+      } catch (error) {
+        console.error(error);
+        alert('No se pudo cargar la lista de clientes');
+      }
+    });
+
+    document.getElementById('searchInput').addEventListener('input', () => {
+      aplicarFiltros();
+    });
+
+    document.getElementById('membresiaActivaCheckbox').addEventListener('change', () => {
+      aplicarFiltros();
+    });
+
+    document.getElementById('prevBtn').addEventListener('click', () => {
+      if (currentPage > 1) {
+        currentPage--;
+        renderClientes();
+      }
+    });
+
+    document.getElementById('nextBtn').addEventListener('click', () => {
+      const totalPaginas = Math.ceil(clientesFiltrados.length / clientesPorPagina);
+      if (currentPage < totalPaginas) {
+        currentPage++;
+        renderClientes();
+      }
+    });
+
+    function aplicarFiltros() {
+      const term = document.getElementById('searchInput').value.toLowerCase();
+      const filtrarActivos = document.getElementById('membresiaActivaCheckbox').checked;
+
+      clientesFiltrados = clientesData.filter(c => {
+        const coincide = c.Nombre?.toLowerCase().includes(term) ||
+          c.Apellido?.toLowerCase().includes(term) ||
+          c.CorreoElectronico?.toLowerCase().includes(term) ||
+          c.TelefonoMovil?.toLowerCase().includes(term);
+
+        const activa = c.VencimientoPlan && new Date(c.VencimientoPlan) > new Date();
+
+        return coincide && (filtrarActivos ? activa : true);
+      });
+
+      currentPage = 1;
+      renderClientes();
+    }
+
+    function renderClientes() {
+      const tbody = document.getElementById('clientesTableBody');
+      tbody.innerHTML = '';
+
+      const totalPaginas = Math.ceil(clientesFiltrados.length / clientesPorPagina);
+      if (currentPage > totalPaginas) currentPage = totalPaginas || 1;
+
+      const start = (currentPage - 1) * clientesPorPagina;
+      const end = start + clientesPorPagina;
+      const clientesPagina = clientesFiltrados.slice(start, end);
+
+      clientesPagina.forEach(cliente => {
+        const vencimiento = cliente.VencimientoPlan ? new Date(cliente.VencimientoPlan) : null;
+        const esActiva = vencimiento && vencimiento > new Date();
+        const estadoMembresia = esActiva ? 'Activa' : 'Inactiva';
+        const badge = esActiva ? 'bg-success' : 'bg-secondary';
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${cliente.IdCliente}</td>
+          <td>${cliente.Nombre}</td>
+          <td>${cliente.Apellido}</td>
+          <td>${cliente.CorreoElectronico}</td>
+          <td>${cliente.TelefonoMovil}</td>
+          <td>${cliente.Sede}</td>
+          <td><span class="badge ${badge}">${estadoMembresia}</span></td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      document.getElementById('pageInfo').textContent = `Página ${currentPage} de ${totalPaginas || 1}`;
+      document.getElementById('prevBtn').disabled = currentPage === 1;
+      document.getElementById('nextBtn').disabled = currentPage >= totalPaginas;
+    }
+  </script>
+</body>
+
+</html>
